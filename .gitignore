@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+/.nyc_output
+/playwright-report
+/test-results
 
 # next.js
 /.next/
@@ -19,22 +22,41 @@
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+*.local
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
 
 # env files (can opt-in for committing if needed)
 .env*
 
 # vercel
 .vercel
+
+# caches
+.eslintcache
+.stylelintcache
+.turbo
+.parcel-cache
+
+# local temp files
+/tmp
+/temp
+
+# editors
+.idea
+*.swp
+*.swo
 
 # typescript
 *.tsbuildinfo

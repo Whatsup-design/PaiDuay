@@ -14,30 +14,44 @@
 
 ---
 
-## 2. Color Palette (The "Dekup Green" Theme)
-We use a fresh academic green as the core brand color, balanced by deep evergreen and slate tones so the product feels helpful, trustworthy, and calm rather than flashy.
+## 2. Color Palette (The "Phuket Blue Ocean" Theme)
+We use a calm blue ocean palette inspired by Phuket's sea, coastal sky, and responsible tourism mission. The product should feel trustworthy, clean, local, and travel-ready without becoming neon, luxury-resort generic, or sci-fi.
 
 ### Theme Variable Rule
 All product colors must be expressed through centralized CSS theme variables, not repeated as raw hex values inside components. Keep light and dark mode values beside each other in one owned theme location, such as `app/globals.css` or a future dedicated theme variables file, so brand changes and dark mode toggles remain easy to maintain.
 
 ### Backgrounds & Surfaces
-* **App Background:** `#F7FAF3` (A warm green-tinted off-white, reduces eye strain compared to `#FFFFFF`)
-* **Card/Surface:** `#FFFFFF` (Pure white for contrast against the background)
-* **Subtle Fill:** `#EEF5E8` (For secondary containers or hover states)
+* **App Background:** `#F4FAFC` (A soft ocean-tinted off-white, calm and readable for tourist flows)
+* **Card/Surface:** `#FFFFFF` (Pure white for route cards, dashboards, forms, and readable content)
+* **Subtle Fill:** `#E8F4F8` (For secondary containers, selected states, and gentle hover states)
+* **Muted Ocean Surface:** `#D7EEF5` (For route highlights, empty states, and light informational panels)
 
 ### Typography
-* **Primary Text:** `#102014` (Deep green-black - Never use pure black `#000000`)
-* **Secondary Text:** `#536454` (Muted green-slate - For descriptions, timestamps)
-* **Disabled Text:** `#93A38E` (Soft green-slate)
+Use **Inter** as the primary product font across the app. Load it through `next/font/google` in the root layout and expose it as the centralized sans font variable, so headings, forms, buttons, dashboard labels, and tourist-facing copy share one clean identity.
+
+Recommended font weights:
+
+* **Brand / page title:** `600` or `700` only when strong emphasis is needed.
+* **Section heading:** `600`.
+* **Button / CTA:** `600`.
+* **Input value / compact label:** `500`.
+* **Body copy / helper text:** `400`.
+* Avoid making entire forms `700`; it reduces readability and makes the UI feel heavy.
+
+* **Primary Text:** `#0B1F2A` (Deep ocean ink - Never use pure black `#000000`)
+* **Secondary Text:** `#4E6570` (Muted blue-slate - For descriptions, timestamps, and metadata)
+* **Disabled Text:** `#8CA4AE` (Soft blue-gray)
 
 ### Brand & Accents
-* **Primary Brand:** `#7EC626` (Dekup green)
-* **Primary Hover:** `#6FB31F`
-* **Secondary Brand:** `#1E4D3A` (Deep evergreen, chosen to pair with the bright primary while preserving strong contrast)
-* **Secondary Hover:** `#163B2C`
-* **Success:** `#2F7D32` (Grounded success green)
-* **Destructive/Error:** `#B91C1C` (Muted Brick Red)
-* **Warning:** `#CA8A04` (Ochre/Mustard)
+* **Primary Brand:** `#0EA5C6` (Andaman blue, used for primary CTAs and quest progress)
+* **Primary Hover:** `#078BAD`
+* **Secondary Brand:** `#075985` (Deep ocean blue, used for headers, key dashboard moments, and strong contrast)
+* **Secondary Hover:** `#06476A`
+* **Accent:** `#38BDF8` (Clear sky blue, use sparingly for highlights and active states)
+* **Success:** `#168A5B` (Sea-grass green for completed check-ins, verified coupons, and positive impact)
+* **Destructive/Error:** `#B42318` (Muted coral red)
+* **Warning:** `#B7791F` (Sandy amber for caution and pending states)
+* **Impact Highlight:** `#0F766E` (Teal for People/Profit impact metrics and sustainability callouts)
 
 ---
 
@@ -63,4 +77,3 @@ We use a 3-tier elevation system using precise `rgba(0,0,0, X)` values.
   /* Inner Shadow: Pressed buttons, well/inset containers */
   --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
 }
-
