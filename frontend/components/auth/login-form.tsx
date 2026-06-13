@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -25,7 +27,7 @@ export function LoginForm() {
           </p>
         </div>
 
-        <form className="space-y-8">
+        <form className="space-y-8" onSubmit={(event) => event.preventDefault()}>
           <input
             id="email"
             name="email"

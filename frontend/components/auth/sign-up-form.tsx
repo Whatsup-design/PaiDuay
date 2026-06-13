@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -47,7 +49,7 @@ export function SignUpForm() {
           <div className="h-px flex-1 bg-neutral-200" />
         </div>
 
-        <form className="space-y-7">
+        <form className="space-y-7" onSubmit={(event) => event.preventDefault()}>
           <input
             id="username"
             name="username"
