@@ -5,9 +5,10 @@ type AuthFormMode = "login" | "sign-up";
 
 type AuthFormProps = {
   mode: AuthFormMode;
+  registrationMessage?: string;
 };
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, registrationMessage }: AuthFormProps) {
   return (
     <main className="min-h-screen bg-[var(--ocean-surface)] font-sans text-[var(--ocean-ink)]">
       <div className="grid min-h-screen w-full lg:grid-cols-[2.5fr_1.5fr]">
@@ -19,7 +20,11 @@ export function AuthForm({ mode }: AuthFormProps) {
         </section>
 
         <section className="min-h-screen bg-[var(--ocean-bg)]">
-          {mode === "login" ? <LoginForm /> : <SignUpForm />}
+          {mode === "login" ? (
+            <LoginForm registrationMessage={registrationMessage} />
+          ) : (
+            <SignUpForm />
+          )}
         </section>
       </div>
     </main>

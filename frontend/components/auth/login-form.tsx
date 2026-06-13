@@ -3,7 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export function LoginForm() {
+type LoginFormProps = {
+  registrationMessage?: string;
+};
+
+export function LoginForm({ registrationMessage }: LoginFormProps) {
   return (
     <div className="flex min-h-screen flex-col justify-center px-8 py-10 sm:px-12 lg:px-16">
       <div className="mx-auto w-full max-w-sm">
@@ -50,6 +54,12 @@ export function LoginForm() {
           >
             Login Now
           </button>
+
+          {registrationMessage ? (
+            <p className="-mt-5 text-center text-sm font-semibold text-blue-600">
+              {registrationMessage}
+            </p>
+          ) : null}
 
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-neutral-200" />

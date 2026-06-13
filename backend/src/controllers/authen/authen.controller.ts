@@ -42,6 +42,16 @@ function formatZodError(error: z.ZodError) {
   }));
 }
 
+function isExistingAccountSignUpError(message: string) {
+  const normalizedMessage = message.toLowerCase();
+
+  return (
+    normalizedMessage.includes("already registered") ||
+    normalizedMessage.includes("already exists") ||
+    normalizedMessage.includes("user already")
+  );
+}
+
 export async function loginController(req: Request, res: Response) {
   const parsedBody = loginSchema.safeParse(req.body);
 
@@ -86,8 +96,21 @@ export async function signUpController(req: Request, res: Response) {
       data
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Sign up failed";
+
+    if (isExistingAccountSignUpError(message)) {
+      return res.status(200).json({
+        message: "Account already exists. Please login.",
+        data: {
+          user: null,
+          session: null,
+          alreadyRegistered: true
+        }
+      });
+    }
+
     return res.status(400).json({
-      message: error instanceof Error ? error.message : "Sign up failed"
+      message
     });
   }
 }

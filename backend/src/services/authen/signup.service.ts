@@ -17,12 +17,13 @@ export async function signUpWithEmailPassword(input: SignUpInput) {
     }
   });
 
-  if (error) {
+  if (error && !data.user) {
     throw new Error(error.message);
   }
 
   return {
     user: data.user,
-    session: data.session
+    session: data.session,
+    warning: error?.message
   };
 }
