@@ -6,9 +6,42 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().positive().default(4000),
+  HOST: z.string().trim().min(1).default("127.0.0.1"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
-  SUPABASE_URL: z.string().url().optional(),
-  SUPABASE_ANON_KEY: z.string().optional()
+  AUTH_GOOGLE_REDIRECT_URL: z
+    .string()
+    .trim()
+    .url("AUTH_GOOGLE_REDIRECT_URL must be a valid callback URL"),
+  AUTH_SUCCESS_REDIRECT_URL: z
+    .string()
+    .trim()
+    .url("AUTH_SUCCESS_REDIRECT_URL must be a valid URL")
+    .default("http://localhost:3000"),
+  AUTH_ERROR_REDIRECT_URL: z
+    .string()
+    .trim()
+    .url("AUTH_ERROR_REDIRECT_URL must be a valid URL")
+    .default("http://localhost:3000/login"),
+  SUPABASE_URL: z
+    .string()
+    .trim()
+    .url("SUPABASE_URL must be a valid Supabase project URL"),
+  SUPABASE_ANON_KEY: z
+    .string()
+    .trim()
+    .min(1, "SUPABASE_ANON_KEY is required"),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().trim().min(1).optional()
 });
 
-export const env = envSchema.parse(process.env);
+const parsedEnv = envSchema.safeParse(process.env);
+
+if (!parsedEnv.success) {
+  const details = parsedEnv.error.issues
+    .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
+    .join("\n");
+
+  throw new Error(`Invalid backend environment variables:\n${details}`);
+}
+
+export const env = parsedEnv.data;
+export type Env = typeof env;

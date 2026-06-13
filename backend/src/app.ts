@@ -5,7 +5,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import { env } from "./env.js";
-import { supabase } from "./supabase.js";
+import { supabase, supabaseAdmin } from "./lib/supabase.js";
+import { authenRouter } from "./routes/authen/authen.routes.js";
 
 export const app = express();
 
@@ -20,10 +21,19 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(morgan(env.NODE_ENV === "production" ? "combined" : "dev"));
 
+app.use("/authen", authenRouter);
+
 app.get("/health", (_req, res) => {
   res.status(200).json({
     ok: true,
     service: "paiduay-backend",
-    supabase: Boolean(supabase)
+    supabase: Boolean(supabase),
+    supabaseAdmin: Boolean(supabaseAdmin)
+  });
+});
+
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    message: "Welcome to Paiduay Backend!"
   });
 });
