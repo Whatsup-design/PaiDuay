@@ -1,8 +1,9 @@
 import { app } from "./app.js";
 import { env } from "./env.js";
 
-const server = app.listen(env.PORT, env.HOST, () => {
-  console.log(`Paiduay backend running on http://${env.HOST}:${env.PORT}`);
+const host = env.NODE_ENV === "production" ? "0.0.0.0" : env.HOST;
+const server = app.listen(env.PORT, host, () => {
+  console.log(`Paiduay backend running on http://${host}:${env.PORT}`);
 });
 
 server.on("error", (error) => {
