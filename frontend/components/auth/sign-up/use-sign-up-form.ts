@@ -61,10 +61,6 @@ export function useSignUpForm() {
   const [isSuccessMessage, setIsSuccessMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function redirectToVerifyEmail(email: string) {
-    router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-  }
-
   async function handleSignUpSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -95,7 +91,7 @@ export function useSignUpForm() {
       setErrors({});
       setIsSuccessMessage(true);
       form.reset();
-      redirectToVerifyEmail(payload.email);
+      router.push("/login?registered=1");
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         setErrors({});

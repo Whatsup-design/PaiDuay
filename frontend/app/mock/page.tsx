@@ -1,12 +1,4 @@
-type MockPageProps = {
-  searchParams: Promise<{
-    verified?: string;
-  }>;
-};
-
-export default async function MockPage({ searchParams }: MockPageProps) {
-  const { verified } = await searchParams;
-
+export default function MockPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[var(--ocean-bg)] px-6 font-sans text-[var(--ocean-ink)]">
       <section className="w-full max-w-xl text-center">
@@ -20,11 +12,6 @@ export default async function MockPage({ searchParams }: MockPageProps) {
           This page is a temporary placeholder for the authenticated Paiduay
           experience.
         </p>
-        {verified === "1" ? (
-          <p className="mt-6 text-sm font-semibold text-blue-600">
-            Email confirmed successfully.
-          </p>
-        ) : null}
       </section>
     </main>
   );

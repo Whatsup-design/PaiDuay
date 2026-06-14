@@ -5,10 +5,9 @@ import { env } from "../../env.js";
 import {
   createGoogleOAuthUrl,
   exchangeGoogleOAuthCode
-} from "../../services/authen/google-oauth.service.js";
-import { loginWithEmailPassword } from "../../services/authen/login.service.js";
-import { resendSignUpConfirmation } from "../../services/authen/resend-confirmation.service.js";
-import { signUpWithEmailPassword } from "../../services/authen/signup.service.js";
+} from "../../services/authen/google-oauth.js";
+import { loginWithEmailPassword } from "../../services/authen/login.js";
+import { signUpWithEmailPassword } from "../../services/authen/signup.js";
 
 const loginSchema = z.object({
   email: z.string().trim().email(),
@@ -36,10 +35,6 @@ const googleOAuthCallbackSchema = z.object({
   next: z.string().trim().startsWith("/").default("/")
 });
 
-const resendConfirmationSchema = z.object({
-  email: z.string().trim().email()
-});
-
 function formatZodError(error: z.ZodError) {
   return error.issues.map((issue) => ({
     path: issue.path.join("."),
@@ -54,6 +49,18 @@ function isExistingAccountSignUpError(message: string) {
     normalizedMessage.includes("already registered") ||
     normalizedMessage.includes("already exists") ||
     normalizedMessage.includes("user already")
+  );
+}
+
+function isTemporaryLoginError(message: string) {
+  const normalizedMessage = message.toLowerCase();
+
+  return (
+    normalizedMessage.includes("rate limit") ||
+    normalizedMessage.includes("too many") ||
+    normalizedMessage.includes("network") ||
+    normalizedMessage.includes("timeout") ||
+    normalizedMessage.includes("fetch failed")
   );
 }
 
@@ -75,8 +82,16 @@ export async function loginController(req: Request, res: Response) {
       data
     });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Login failed";
+
+    if (isTemporaryLoginError(message)) {
+      return res.status(503).json({
+        message: "Unable to login. Please wait."
+      });
+    }
+
     return res.status(401).json({
-      message: error instanceof Error ? error.message : "Login failed"
+      message: "Email or password incorrect."
     });
   }
 }
@@ -116,32 +131,6 @@ export async function signUpController(req: Request, res: Response) {
 
     return res.status(400).json({
       message
-    });
-  }
-}
-
-export async function resendConfirmationController(req: Request, res: Response) {
-  const parsedBody = resendConfirmationSchema.safeParse(req.body);
-
-  if (!parsedBody.success) {
-    return res.status(400).json({
-      message: "Invalid resend confirmation payload",
-      errors: formatZodError(parsedBody.error)
-    });
-  }
-
-  try {
-    await resendSignUpConfirmation(parsedBody.data);
-
-    return res.status(200).json({
-      message: "Confirmation email sent"
-    });
-  } catch (error) {
-    return res.status(400).json({
-      message:
-        error instanceof Error
-          ? error.message
-          : "Unable to resend confirmation email"
     });
   }
 }

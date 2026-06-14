@@ -1,5 +1,4 @@
 import { supabase } from "../../lib/supabase.js";
-import { env } from "../../env.js";
 
 export type SignUpInput = {
   email: string;
@@ -12,7 +11,6 @@ export async function signUpWithEmailPassword(input: SignUpInput) {
     email: input.email,
     password: input.password,
     options: {
-      emailRedirectTo: env.AUTH_EMAIL_CONFIRM_REDIRECT_URL,
       data: {
         username: input.username
       }

@@ -41,6 +41,18 @@ function getLoginPayload(formData: FormData): LoginPayload {
   };
 }
 
+function getSafeLoginErrorMessage(error: unknown) {
+  if (!(error instanceof ApiError)) {
+    return "Unable to login. Please wait.";
+  }
+
+  if (error.status === 401) {
+    return "Email or password incorrect.";
+  }
+
+  return "Unable to login. Please wait.";
+}
+
 export function useLoginForm() {
   const router = useRouter();
   const submitLockRef = useRef(false);
@@ -77,11 +89,7 @@ export function useLoginForm() {
       form.reset();
       router.push("/mock");
     } catch (error) {
-      setStatusMessage(
-        error instanceof ApiError
-          ? error.message
-          : "Unable to login. Please try again."
-      );
+      setStatusMessage(getSafeLoginErrorMessage(error));
     } finally {
       submitLockRef.current = false;
       setIsSubmitting(false);

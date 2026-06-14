@@ -6,7 +6,7 @@ import morgan from "morgan";
 
 import { env } from "./env.js";
 import { supabase, supabaseAdmin } from "./lib/supabase.js";
-import { authenRouter } from "./routes/authen/authen.routes.js";
+import { authenRouter } from "./routes/authen/authen.js";
 
 export const app = express();
 
