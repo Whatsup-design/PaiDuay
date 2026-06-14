@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { PasswordInput } from "@/components/auth/helpers/password-input";
+import { getGoogleOAuthUrl } from "@/lib/auth-api";
 import { useLoginForm } from "./use-login-form";
 
 type LoginFormProps = {
@@ -97,8 +98,8 @@ export function LoginForm({ registrationMessage }: LoginFormProps) {
             <div className="h-px flex-1 bg-neutral-200" />
           </div>
 
-          <button
-            type="button"
+          <a
+            href={getGoogleOAuthUrl("/mock")}
             className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-md border border-neutral-200 bg-white text-sm font-semibold text-neutral-900 shadow-[var(--shadow-sm)] transition hover:bg-neutral-50"
           >
             <Image
@@ -108,8 +109,8 @@ export function LoginForm({ registrationMessage }: LoginFormProps) {
               height={20}
               aria-hidden="true"
             />
-            Login with Google
-          </button>
+            Continue with Google
+          </a>
         </form>
 
         <p className="mt-8 text-center text-sm text-neutral-400">

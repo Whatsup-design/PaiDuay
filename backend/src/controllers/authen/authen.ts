@@ -64,6 +64,10 @@ function isTemporaryLoginError(message: string) {
   );
 }
 
+function buildFrontendRedirectUrl(baseUrl: string, nextPath: string) {
+  return new URL(nextPath, baseUrl).toString();
+}
+
 export async function loginController(req: Request, res: Response) {
   const parsedBody = loginSchema.safeParse(req.body);
 
@@ -172,18 +176,15 @@ export async function googleOAuthCallbackController(
   }
 
   try {
-    const data = await exchangeGoogleOAuthCode(parsedQuery.data.code);
+    await exchangeGoogleOAuthCode(parsedQuery.data.code);
 
-    return res.status(200).json({
-      message: "Google OAuth successful",
-      next: parsedQuery.data.next,
-      data
-    });
-  } catch (error) {
-    const reason = encodeURIComponent(
-      error instanceof Error ? error.message : "Google OAuth failed"
+    return res.redirect(
+      buildFrontendRedirectUrl(
+        env.AUTH_SUCCESS_REDIRECT_URL,
+        parsedQuery.data.next
+      )
     );
-
-    return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=${reason}`);
+  } catch (error) {
+    return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_failed`);
   }
 }

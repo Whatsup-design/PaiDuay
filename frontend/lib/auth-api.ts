@@ -1,4 +1,4 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch, buildApiUrl } from "@/lib/api";
 
 export type SignUpRequest = {
   username: string;
@@ -53,4 +53,10 @@ export function signUp(input: SignUpRequest) {
     method: "POST",
     body: input
   });
+}
+
+export function getGoogleOAuthUrl(nextPath = "/mock") {
+  const params = new URLSearchParams({ next: nextPath });
+
+  return buildApiUrl(`/authen/google?${params.toString()}`);
 }

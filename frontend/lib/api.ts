@@ -1,4 +1,4 @@
-const API_BASE_URL =
+export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
   "http://127.0.0.1:3001";
 
@@ -63,4 +63,8 @@ export async function apiFetch<TResponse>(
   }
 
   return payload as TResponse;
+}
+
+export function buildApiUrl(path: string) {
+  return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }

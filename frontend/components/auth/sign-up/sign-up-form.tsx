@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { PasswordInput } from "@/components/auth/helpers/password-input";
 import { useSignUpForm } from "./use-sign-up-form";
@@ -35,28 +34,6 @@ export function SignUpForm() {
             </Link>
             .
           </p>
-        </div>
-
-        <button
-          type="button"
-          className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-md border border-neutral-200 bg-white text-sm font-semibold text-neutral-900 shadow-[var(--shadow-sm)] transition hover:bg-neutral-50"
-        >
-          <Image
-            src="/google-provider-icon.webp"
-            alt=""
-            width={20}
-            height={20}
-            aria-hidden="true"
-          />
-          Register with Google
-        </button>
-
-        <div className="my-7 flex items-center gap-4">
-          <div className="h-px flex-1 bg-neutral-200" />
-          <span className="text-sm font-normal text-neutral-400">
-            or
-          </span>
-          <div className="h-px flex-1 bg-neutral-200" />
         </div>
 
         <form className="space-y-7" onSubmit={handleSignUpSubmit} noValidate>
