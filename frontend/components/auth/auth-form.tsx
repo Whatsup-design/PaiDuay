@@ -1,5 +1,5 @@
-import { LoginForm } from "@/components/auth/login-form";
-import { SignUpForm } from "@/components/auth/sign-up-form";
+import { LoginForm } from "@/components/auth/login/login-form";
+import { SignUpForm } from "@/components/auth/sign-up/sign-up-form";
 
 type AuthFormMode = "login" | "sign-up";
 

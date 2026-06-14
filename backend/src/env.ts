@@ -22,6 +22,11 @@ const envSchema = z.object({
     .trim()
     .url("AUTH_ERROR_REDIRECT_URL must be a valid URL")
     .default("http://localhost:3000/login"),
+  AUTH_EMAIL_CONFIRM_REDIRECT_URL: z
+    .string()
+    .trim()
+    .url("AUTH_EMAIL_CONFIRM_REDIRECT_URL must be a valid URL")
+    .default("http://localhost:3000/login?verified=1"),
   SUPABASE_URL: z
     .string()
     .trim()

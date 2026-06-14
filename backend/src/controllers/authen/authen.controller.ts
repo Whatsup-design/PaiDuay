@@ -7,6 +7,7 @@ import {
   exchangeGoogleOAuthCode
 } from "../../services/authen/google-oauth.service.js";
 import { loginWithEmailPassword } from "../../services/authen/login.service.js";
+import { resendSignUpConfirmation } from "../../services/authen/resend-confirmation.service.js";
 import { signUpWithEmailPassword } from "../../services/authen/signup.service.js";
 
 const loginSchema = z.object({
@@ -33,6 +34,10 @@ const googleOAuthStartSchema = z.object({
 const googleOAuthCallbackSchema = z.object({
   code: z.string().trim().min(1),
   next: z.string().trim().startsWith("/").default("/")
+});
+
+const resendConfirmationSchema = z.object({
+  email: z.string().trim().email()
 });
 
 function formatZodError(error: z.ZodError) {
@@ -111,6 +116,32 @@ export async function signUpController(req: Request, res: Response) {
 
     return res.status(400).json({
       message
+    });
+  }
+}
+
+export async function resendConfirmationController(req: Request, res: Response) {
+  const parsedBody = resendConfirmationSchema.safeParse(req.body);
+
+  if (!parsedBody.success) {
+    return res.status(400).json({
+      message: "Invalid resend confirmation payload",
+      errors: formatZodError(parsedBody.error)
+    });
+  }
+
+  try {
+    await resendSignUpConfirmation(parsedBody.data);
+
+    return res.status(200).json({
+      message: "Confirmation email sent"
+    });
+  } catch (error) {
+    return res.status(400).json({
+      message:
+        error instanceof Error
+          ? error.message
+          : "Unable to resend confirmation email"
     });
   }
 }

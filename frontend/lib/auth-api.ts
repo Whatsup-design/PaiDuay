@@ -7,6 +7,15 @@ export type SignUpRequest = {
   confirmPassword: string;
 };
 
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type ResendConfirmationRequest = {
+  email: string;
+};
+
 type SupabaseAuthUser = {
   id: string;
   email?: string;
@@ -28,8 +37,34 @@ export type SignUpResponse = {
   };
 };
 
+export type LoginResponse = {
+  message: string;
+  data: {
+    user: SupabaseAuthUser | null;
+    session: SupabaseSession | null;
+  };
+};
+
+export type ResendConfirmationResponse = {
+  message: string;
+};
+
+export function login(input: LoginRequest) {
+  return apiFetch<LoginResponse>("/authen/login", {
+    method: "POST",
+    body: input
+  });
+}
+
 export function signUp(input: SignUpRequest) {
   return apiFetch<SignUpResponse>("/authen/signup", {
+    method: "POST",
+    body: input
+  });
+}
+
+export function resendConfirmation(input: ResendConfirmationRequest) {
+  return apiFetch<ResendConfirmationResponse>("/authen/resend-confirmation", {
     method: "POST",
     body: input
   });

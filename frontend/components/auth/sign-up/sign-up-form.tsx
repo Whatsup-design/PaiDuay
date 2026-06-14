@@ -1,114 +1,18 @@
 "use client";
 
-import { ApiError } from "@/lib/api";
-import { signUp } from "@/lib/auth-api";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
-
-type SignUpErrors = Partial<
-  Record<"username" | "email" | "password" | "confirmPassword", string>
->;
-
-type SignUpPayload = {
-  username: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-
-function validateSignUpPayload(payload: SignUpPayload) {
-  const errors: SignUpErrors = {};
-
-  if (payload.username.length < 2) {
-    errors.username = "Username must be at least 2 characters.";
-  }
-
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
-    errors.email = "Please enter a valid email.";
-  }
-
-  if (payload.password.length < 8) {
-    errors.password = "Password must be at least 8 characters.";
-  }
-
-  if (payload.confirmPassword !== payload.password) {
-    errors.confirmPassword = "Passwords do not match.";
-  }
-
-  return errors;
-}
+import { PasswordInput } from "@/components/auth/helpers/password-input";
+import { useSignUpForm } from "./use-sign-up-form";
 
 export function SignUpForm() {
-  const router = useRouter();
-  const submitLockRef = useRef(false);
-  const [errors, setErrors] = useState<SignUpErrors>({});
-  const [statusMessage, setStatusMessage] = useState("");
-  const [isSuccessMessage, setIsSuccessMessage] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  function redirectToLoginAfterSignUp() {
-    router.push("/login?registered=1");
-  }
-
-  async function handleSignUpSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (submitLockRef.current) {
-      return;
-    }
-
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const payload: SignUpPayload = {
-      username: String(formData.get("username") ?? "").trim(),
-      email: String(formData.get("email") ?? "").trim(),
-      password: String(formData.get("password") ?? ""),
-      confirmPassword: String(formData.get("confirmPassword") ?? "")
-    };
-    const nextErrors = validateSignUpPayload(payload);
-
-    setErrors(nextErrors);
-
-    if (Object.keys(nextErrors).length > 0) {
-      setStatusMessage("");
-      setIsSuccessMessage(false);
-      return;
-    }
-
-    submitLockRef.current = true;
-    setIsSubmitting(true);
-    setStatusMessage("");
-    setIsSuccessMessage(false);
-
-    try {
-      await signUp(payload);
-
-      setErrors({});
-      setIsSuccessMessage(true);
-      form.reset();
-      redirectToLoginAfterSignUp();
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 409) {
-        setErrors({});
-        setIsSuccessMessage(true);
-        form.reset();
-        redirectToLoginAfterSignUp();
-        return;
-      }
-
-      setStatusMessage(
-        error instanceof ApiError
-          ? error.message
-          : "Unable to create account. Please try again."
-      );
-      setIsSuccessMessage(false);
-    } finally {
-      submitLockRef.current = false;
-      setIsSubmitting(false);
-    }
-  }
+  const {
+    errors,
+    handleSignUpSubmit,
+    isSubmitting,
+    isSuccessMessage,
+    statusMessage
+  } = useSignUpForm();
 
   return (
     <div className="flex min-h-screen flex-col justify-center px-8 py-10 sm:px-12 lg:px-16">
@@ -186,14 +90,12 @@ export function SignUpForm() {
             </p>
           ) : null}
 
-          <input
+          <PasswordInput
             id="password"
             name="password"
-            type="password"
             placeholder="Password"
-            aria-invalid={Boolean(errors.password)}
-            aria-describedby={errors.password ? "password-error" : undefined}
-            className="h-12 w-full border-0 border-b border-neutral-300 bg-transparent px-0 text-sm font-medium text-neutral-950 outline-none transition placeholder:font-normal placeholder:text-neutral-400 focus:border-neutral-950 focus:ring-0"
+            hasError={Boolean(errors.password)}
+            describedBy={errors.password ? "password-error" : undefined}
           />
           {errors.password ? (
             <p id="password-error" className="-mt-5 text-xs font-medium text-red-500">
@@ -201,16 +103,14 @@ export function SignUpForm() {
             </p>
           ) : null}
 
-          <input
+          <PasswordInput
             id="confirm-password"
             name="confirmPassword"
-            type="password"
             placeholder="Confirm password"
-            aria-invalid={Boolean(errors.confirmPassword)}
-            aria-describedby={
+            hasError={Boolean(errors.confirmPassword)}
+            describedBy={
               errors.confirmPassword ? "confirm-password-error" : undefined
             }
-            className="h-12 w-full border-0 border-b border-neutral-300 bg-transparent px-0 text-sm font-medium text-neutral-950 outline-none transition placeholder:font-normal placeholder:text-neutral-400 focus:border-neutral-950 focus:ring-0"
           />
           {errors.confirmPassword ? (
             <p
