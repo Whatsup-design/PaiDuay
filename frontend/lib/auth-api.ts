@@ -55,7 +55,7 @@ export function signUp(input: SignUpRequest) {
   });
 }
 
-export function getGoogleOAuthUrl(nextPath = "/mock") {
+export function getGoogleOAuthUrl(nextPath = "/home") {
   const params = new URLSearchParams({ next: nextPath });
 
   return buildApiUrl(`/authen/google?${params.toString()}`);

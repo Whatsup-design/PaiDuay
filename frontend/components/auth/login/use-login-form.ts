@@ -87,7 +87,7 @@ export function useLoginForm() {
 
       setErrors({});
       form.reset();
-      router.push("/mock");
+      router.push("/home");
     } catch (error) {
       setStatusMessage(getSafeLoginErrorMessage(error));
     } finally {

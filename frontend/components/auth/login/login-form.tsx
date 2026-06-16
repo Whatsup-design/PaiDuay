@@ -99,7 +99,7 @@ export function LoginForm({ registrationMessage }: LoginFormProps) {
           </div>
 
           <a
-            href={getGoogleOAuthUrl("/mock")}
+            href={getGoogleOAuthUrl("/home")}
             className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-md border border-neutral-200 bg-white text-sm font-semibold text-neutral-900 shadow-[var(--shadow-sm)] transition hover:bg-neutral-50"
           >
             <Image
