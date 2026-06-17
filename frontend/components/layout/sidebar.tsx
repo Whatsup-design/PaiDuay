@@ -1,3 +1,5 @@
+"use client";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,13 +11,14 @@ import {
   Store
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const mainNavItems = [
-  { label: "Home", href: "/home", icon: Home, active: true },
-  { label: "OTOP", href: "#", icon: Store },
-  { label: "Market", href: "#", icon: ShoppingBag },
-  { label: "Quest", href: "#", icon: Map },
-  { label: "Reward", href: "#", icon: Medal }
+  { label: "Home", href: "/home", icon: Home },
+  { label: "OTOP", href: "/otop", icon: Store },
+  { label: "Market", href: "/market", icon: ShoppingBag },
+  { label: "Quest", href: "/quest", icon: Map },
+  { label: "Reward", href: "/reward", icon: Medal }
 ];
 
 type SidebarProps = {
@@ -24,6 +27,7 @@ type SidebarProps = {
 };
 
 export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
+  const pathname = usePathname();
   const labelClassName = `overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-200 ease-out ${
     isCollapsed
       ? "max-w-0 translate-x-1 opacity-0"
@@ -56,6 +60,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           <div className="space-y-1">
             {mainNavItems.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.href;
 
               return (
                 <Link
@@ -63,7 +68,7 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
                   href={item.href}
                   title={isCollapsed ? item.label : undefined}
                   className={`flex h-10 items-center overflow-hidden rounded-md text-sm font-semibold transition-colors duration-200 ${
-                    item.active
+                    isActive
                       ? "bg-sky-50 text-sky-950"
                       : "text-neutral-700 hover:bg-sky-50 hover:text-sky-950"
                   }`}
@@ -80,9 +85,13 @@ export function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
 
         <div>
           <Link
-            href="#"
+            href="/settings"
             title={isCollapsed ? "Settings" : undefined}
-            className="flex h-10 items-center overflow-hidden rounded-md text-sm font-semibold text-neutral-700 transition-colors duration-200 hover:bg-sky-50 hover:text-sky-950"
+            className={`flex h-10 items-center overflow-hidden rounded-md text-sm font-semibold transition-colors duration-200 ${
+              pathname === "/settings"
+                ? "bg-sky-50 text-sky-950"
+                : "text-neutral-700 hover:bg-sky-50 hover:text-sky-950"
+            }`}
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center">
               <Settings className="h-5 w-5" strokeWidth={2.2} />
