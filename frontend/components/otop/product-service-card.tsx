@@ -6,7 +6,7 @@ type ProductServiceCardProps = {
 
 export function ProductServiceCard({ item }: ProductServiceCardProps) {
   return (
-    <article className="min-w-[13.5rem] snap-start overflow-hidden rounded-md border border-neutral-200/80 bg-neutral-50/70 shadow-[0_6px_18px_rgb(15_23_42_/_6%)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white sm:min-w-[16rem]">
+    <article className="w-[13.5rem] shrink-0 snap-start overflow-hidden rounded-md border border-neutral-200/80 bg-neutral-50/70 shadow-[0_6px_18px_rgb(15_23_42_/_6%)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white sm:w-[16rem]">
       <div
         className={`h-28 bg-gradient-to-br opacity-35 grayscale ${item.gradient}`}
       />

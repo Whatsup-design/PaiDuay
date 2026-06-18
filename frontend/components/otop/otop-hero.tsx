@@ -8,7 +8,7 @@ type OtopHeroProps = {
 
 export function OtopHero({ locations }: OtopHeroProps) {
   return (
-    <section className="rounded-xl bg-gradient-to-br from-sky-50 via-white to-cyan-50 px-5 py-8 md:px-8 md:py-10">
+    <section className="rounded-xl bg-gradient-to-br from-sky-50 via-white to-cyan-50 px-4 py-6 sm:px-5 sm:py-8 md:px-8 md:py-10">
       <div>
         <div className="max-w-4xl">
           <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-700 text-white shadow-[var(--shadow-sm)]">
@@ -17,7 +17,7 @@ export function OtopHero({ locations }: OtopHeroProps) {
           <p className="mt-6 text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
             Phuket OTOP
           </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
+          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl md:text-5xl">
             Explore OTOP near your place
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-600 md:text-base">
@@ -26,7 +26,7 @@ export function OtopHero({ locations }: OtopHeroProps) {
             them search from zero.
           </p>
 
-          <div className="mt-8 rounded-xl border border-sky-200 bg-white p-4 shadow-[var(--shadow-sm)]">
+          <div className="mt-6 rounded-xl border border-sky-200 bg-white p-3 shadow-[var(--shadow-sm)] sm:mt-8 sm:p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex flex-1 items-center gap-3 rounded-lg bg-sky-50 px-4 py-3 text-left">
                 <MapPin className="h-5 w-5 shrink-0 text-sky-700" />

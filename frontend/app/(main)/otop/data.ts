@@ -4,8 +4,7 @@ export const otopCategories = [
   "Craft",
   "Wellness",
   "Marine",
-  "Culture",
-  "Service"
+  "Culture"
 ] as const;
 
 export type OtopCategory = (typeof otopCategories)[number];
@@ -69,7 +68,7 @@ export const villages: Village[] = [
     district: "Mueang Phuket",
     description:
       "Community services and marine-inspired products connected to responsible coastal visits.",
-    category: "Service",
+    category: "Marine",
     gradient: "from-blue-200 via-cyan-100 to-slate-100"
   },
   {

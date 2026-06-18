@@ -40,18 +40,18 @@ function CouponTicket({ className = "" }: { className?: string }) {
 
 export default function HomePage() {
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-white px-5 py-10 lg:px-8">
-      <section className="relative mx-auto flex min-h-[34rem] max-w-6xl flex-col items-center justify-center overflow-hidden">
+    <main className="min-h-[calc(100vh-4rem)] bg-white px-4 py-8 sm:px-5 lg:px-8 lg:py-10">
+      <section className="relative mx-auto flex min-h-[28rem] max-w-6xl flex-col items-center justify-center overflow-hidden lg:min-h-[34rem]">
         <CouponTicket className="left-4 top-40" />
         <CouponTicket className="right-24 top-20 rotate-[12deg]" />
 
         <div className="w-full max-w-3xl text-center">
-          <h1 className="text-5xl font-medium leading-tight tracking-tight text-black drop-shadow-md md:text-6xl">
+          <h1 className="text-4xl font-medium leading-tight tracking-tight text-black drop-shadow-md sm:text-5xl md:text-6xl">
             Search Your
             <span className="block font-bold uppercase">Market</span>
           </h1>
 
-          <label className="mt-12 flex min-h-24 w-full items-start gap-3 rounded-xl border border-sky-300 bg-sky-50 px-6 py-5 text-left shadow-[0_8px_18px_rgb(2_132_199_/_12%)]">
+          <label className="mt-8 flex min-h-20 w-full items-start gap-3 rounded-xl border border-sky-300 bg-sky-50 px-4 py-4 text-left shadow-[0_8px_18px_rgb(2_132_199_/_12%)] sm:mt-12 sm:min-h-24 sm:px-6 sm:py-5">
             <Search className="mt-1 h-5 w-5 shrink-0 text-sky-700" />
             <span className="sr-only">Search market</span>
             <textarea
@@ -63,7 +63,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl rounded-lg border border-neutral-100 bg-white p-3 shadow-[0_8px_30px_rgb(15_23_42_/_10%)]">
+      <section className="mx-auto max-w-6xl rounded-lg border border-neutral-100 bg-white p-2 shadow-[0_8px_30px_rgb(15_23_42_/_10%)] sm:p-3">
         <div className="grid gap-3 md:grid-cols-3">
           {marketCards.map((card) => (
             <article
