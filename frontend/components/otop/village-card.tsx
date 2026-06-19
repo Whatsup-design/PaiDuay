@@ -27,10 +27,10 @@ export function VillageCard({ village }: VillageCardProps) {
           {village.description}
         </p>
         <Link
-          href="/quest"
+          href={`/otop/${village.id}`}
           className="mt-4 inline-flex h-9 w-full items-center justify-center rounded-md bg-neutral-950 px-3 text-xs font-semibold text-white transition hover:bg-neutral-800"
         >
-          Start Quest
+          View
         </Link>
       </div>
     </article>
