@@ -2,8 +2,16 @@ export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
   "http://127.0.0.1:3001";
 
-type ApiFetchOptions = Omit<RequestInit, "body"> & {
+const DEFAULT_API_TIMEOUT_MS = 10000;
+
+export type ApiResponse<TData> = {
+  message: string;
+  data: TData;
+};
+
+export type ApiFetchOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
+  timeoutMs?: number;
 };
 
 type ApiErrorPayload = {
@@ -37,16 +45,53 @@ export async function apiFetch<TResponse>(
   path: string,
   options: ApiFetchOptions = {}
 ): Promise<TResponse> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers
-    },
-    body:
-      options.body === undefined ? undefined : JSON.stringify(options.body),
-    credentials: "include"
-  });
+  const {
+    body,
+    signal,
+    timeoutMs = DEFAULT_API_TIMEOUT_MS,
+    ...fetchOptions
+  } = options;
+  const timeoutController = new AbortController();
+  const timeoutId =
+    timeoutMs > 0
+      ? globalThis.setTimeout(() => timeoutController.abort(), timeoutMs)
+      : undefined;
+
+  if (signal) {
+    if (signal.aborted) {
+      timeoutController.abort();
+    } else {
+      signal.addEventListener("abort", () => timeoutController.abort(), {
+        once: true
+      });
+    }
+  }
+
+  let response: Response;
+
+  try {
+    response = await fetch(buildApiUrl(path), {
+      ...fetchOptions,
+      headers: {
+        "Content-Type": "application/json",
+        ...fetchOptions.headers
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      credentials: "include",
+      signal: timeoutController.signal
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError("Request timed out. Please try again.", 408);
+    }
+
+    throw new ApiError("Network request failed. Please try again.", 0);
+  } finally {
+    if (timeoutId !== undefined) {
+      globalThis.clearTimeout(timeoutId);
+    }
+  }
+
   const payload = (await parseJsonResponse(response)) as
     | ApiErrorPayload
     | TResponse
@@ -68,3 +113,51 @@ export async function apiFetch<TResponse>(
 export function buildApiUrl(path: string) {
   return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
 }
+
+export const api = {
+  get<TResponse>(path: string, options: ApiFetchOptions = {}) {
+    return apiFetch<TResponse>(path, {
+      ...options,
+      method: "GET"
+    });
+  },
+  post<TResponse, TBody = unknown>(
+    path: string,
+    body?: TBody,
+    options: ApiFetchOptions = {}
+  ) {
+    return apiFetch<TResponse>(path, {
+      ...options,
+      method: "POST",
+      body
+    });
+  },
+  put<TResponse, TBody = unknown>(
+    path: string,
+    body?: TBody,
+    options: ApiFetchOptions = {}
+  ) {
+    return apiFetch<TResponse>(path, {
+      ...options,
+      method: "PUT",
+      body
+    });
+  },
+  patch<TResponse, TBody = unknown>(
+    path: string,
+    body?: TBody,
+    options: ApiFetchOptions = {}
+  ) {
+    return apiFetch<TResponse>(path, {
+      ...options,
+      method: "PATCH",
+      body
+    });
+  },
+  delete<TResponse>(path: string, options: ApiFetchOptions = {}) {
+    return apiFetch<TResponse>(path, {
+      ...options,
+      method: "DELETE"
+    });
+  }
+};

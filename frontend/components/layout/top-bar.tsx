@@ -1,4 +1,4 @@
-import { Bell, LogOut, Menu, Search, Sparkles } from "lucide-react";
+import { Bell, LogOut, Menu, Search } from "lucide-react";
 
 type TopBarProps = {
   isSidebarCollapsed: boolean;
@@ -25,8 +25,12 @@ export function TopBar({
           isSidebarCollapsed ? "w-auto lg:w-20" : "w-56"
         }`}
       >
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white text-sky-700">
-          <Sparkles className="h-5 w-5" />
+        <div className="flex h-10 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-white/70">
+          <img
+            src="/Paiduay_app-removebg-preview.png"
+            alt="PaiDuay"
+            className="h-full w-full object-contain"
+          />
         </div>
         <div
           className={`ml-3 overflow-hidden whitespace-nowrap transition-[max-width,opacity,transform] duration-200 ease-out ${

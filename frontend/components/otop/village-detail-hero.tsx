@@ -9,9 +9,17 @@ export function VillageDetailHero({ village }: VillageDetailHeroProps) {
   return (
     <section className="overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-[0_10px_30px_rgb(15_23_42_/_7%)]">
       <div className="relative h-56 overflow-hidden bg-neutral-50 sm:h-64">
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${village.gradient} opacity-60 grayscale-[12%]`}
-        />
+        {village.coverImageUrl ? (
+          <img
+            src={village.coverImageUrl}
+            alt={village.coverImageAlt ?? village.name}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        ) : (
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${village.gradient} opacity-60 grayscale-[12%]`}
+          />
+        )}
         <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-white via-white/70 to-transparent" />
         <span className="absolute left-5 top-5 rounded-full bg-white/85 px-3 py-1.5 text-xs font-semibold text-neutral-700 shadow-sm backdrop-blur">
           {village.category}
@@ -27,7 +35,14 @@ export function VillageDetailHero({ village }: VillageDetailHeroProps) {
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <VillageMeta icon={MapPin} label="District" value={village.district} />
+          <VillageMeta
+            icon={MapPin}
+            label="Place"
+            value={
+              village.placeName ||
+              [village.district, village.province].filter(Boolean).join(", ")
+            }
+          />
           <VillageMeta icon={Tag} label="Category" value={village.category} />
         </div>
       </div>

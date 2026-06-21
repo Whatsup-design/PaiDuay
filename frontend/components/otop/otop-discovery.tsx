@@ -65,7 +65,7 @@ export function OtopDiscovery({
 
       <OtopCarousel
         title="Product & Service"
-        description="Mock OTOP products and community services for the first MVP catalog."
+        description="OTOP products and community services from local villages."
         emptyMessage={
           filteredProductServices.length === 0
             ? "This product or service category does not exist yet."

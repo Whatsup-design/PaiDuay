@@ -8,9 +8,17 @@ type VillageCardProps = {
 export function VillageCard({ village }: VillageCardProps) {
   return (
     <article className="w-[14.5rem] shrink-0 snap-start overflow-hidden rounded-md border border-neutral-200/80 bg-neutral-50/70 shadow-[0_6px_18px_rgb(15_23_42_/_6%)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white sm:w-[17.5rem]">
-      <div
-        className={`h-32 bg-gradient-to-br opacity-35 grayscale ${village.gradient}`}
-      />
+      {village.coverImageUrl ? (
+        <img
+          src={village.coverImageUrl}
+          alt={village.coverImageAlt ?? village.name}
+          className="h-32 w-full object-cover"
+        />
+      ) : (
+        <div
+          className={`h-32 bg-gradient-to-br opacity-35 grayscale ${village.gradient}`}
+        />
+      )}
       <div className="p-4">
         <div className="flex items-center justify-between gap-3">
           <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-600">

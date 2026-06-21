@@ -1,4 +1,4 @@
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, MapPin } from "lucide-react";
 import type { Village } from "../../app/(main)/otop/data";
 
 type VillageDetailContentProps = {
@@ -18,6 +18,17 @@ export function VillageDetailContent({ village }: VillageDetailContentProps) {
       </section>
 
       <aside className="space-y-4">
+        {village.googleMapsUrl && (
+          <a
+            href={village.googleMapsUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-3 rounded-xl border border-neutral-100 bg-neutral-50/70 p-5 text-sm font-semibold text-neutral-950 shadow-[0_8px_24px_rgb(15_23_42_/_5%)] transition hover:bg-white"
+          >
+            <MapPin className="h-4 w-4 text-sky-600" />
+            Open in Google Maps
+          </a>
+        )}
         <InfoList title="ภูมิปัญญา" items={village.wisdom} />
         <InfoList title="Highlights" items={village.highlights} />
       </aside>

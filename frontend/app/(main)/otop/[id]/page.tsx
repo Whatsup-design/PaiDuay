@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { VillageDetailContent } from "@/components/otop/village-detail-content";
 import { VillageDetailHero } from "@/components/otop/village-detail-hero";
-import { getVillageById, villages } from "@/app/(main)/otop/data";
+import type { Village } from "@/app/(main)/otop/data";
+import { api, ApiError, type ApiResponse } from "@/lib/api";
 
 type OtopVillageDetailPageProps = {
   params: Promise<{
@@ -11,17 +12,24 @@ type OtopVillageDetailPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return villages.map((village) => ({
-    id: village.id
-  }));
-}
-
 export default async function OtopVillageDetailPage({
   params
 }: OtopVillageDetailPageProps) {
   const { id } = await params;
-  const village = getVillageById(id);
+  let village: Village | null = null;
+
+  try {
+    const response = await api.get<ApiResponse<Village>>(
+      `/user/otop/villages/${encodeURIComponent(id)}`
+    );
+    village = response.data;
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      notFound();
+    }
+
+    throw error;
+  }
 
   if (!village) {
     notFound();
