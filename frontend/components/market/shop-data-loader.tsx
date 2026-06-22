@@ -1,7 +1,13 @@
 "use client";
 
 import { RefreshCw, TriangleAlert } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 
 import { shopCategories, type ShopItem } from "@/app/(main)/market/data";
 import { MarketDiscovery } from "@/components/market/market-discovery";
@@ -16,23 +22,41 @@ type ShopDataLoaderProps = {
 
 export function ShopDataLoader({ initialItems }: ShopDataLoaderProps) {
   const [items, setItems] = useState<ShopItem[] | null>(initialItems);
+  const [searchValue, setSearchValue] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const deferredSearchValue = useDeferredValue(searchValue);
+  const normalizedSearch = deferredSearchValue.trim();
 
-  const loadShopItems = useCallback(async () => {
+  const shopItemsPath = useMemo(() => {
+    if (!normalizedSearch) {
+      return "/user/shop/items";
+    }
+
+    const params = new URLSearchParams({ search: normalizedSearch });
+
+    return `/user/shop/items?${params.toString()}`;
+  }, [normalizedSearch]);
+
+  const loadShopItems = useCallback(async (signal?: AbortSignal) => {
     setIsLoading(true);
     setErrorMessage(null);
 
     try {
       const response = await api.get<ApiResponse<ShopItem[]>>(
-        "/user/shop/items",
+        shopItemsPath,
         {
+          signal,
           timeoutMs: SHOP_FETCH_TIMEOUT_MS
         }
       );
 
       setItems(response.data);
     } catch (error) {
+      if (signal?.aborted) {
+        return;
+      }
+
       const message =
         error instanceof ApiError
           ? error.message
@@ -41,15 +65,26 @@ export function ShopDataLoader({ initialItems }: ShopDataLoaderProps) {
       console.error("Failed to load shop data", error);
       setErrorMessage(message);
     } finally {
-      setIsLoading(false);
+      if (!signal?.aborted) {
+        setIsLoading(false);
+      }
     }
-  }, []);
+  }, [shopItemsPath]);
 
   useEffect(() => {
-    if (initialItems.length === 0) {
-      void loadShopItems();
+    if (!normalizedSearch) {
+      setItems(initialItems);
+      setErrorMessage(null);
+      setIsLoading(false);
+      return;
     }
-  }, [initialItems.length, loadShopItems]);
+
+    const controller = new AbortController();
+
+    void loadShopItems(controller.signal);
+
+    return () => controller.abort();
+  }, [initialItems, loadShopItems, normalizedSearch]);
 
   if (isLoading && !items) {
     return (
@@ -85,7 +120,11 @@ export function ShopDataLoader({ initialItems }: ShopDataLoaderProps) {
         />
       )}
 
-      <MarketHero />
+      <MarketHero
+        searchValue={searchValue}
+        isSearching={isLoading}
+        onSearchChange={setSearchValue}
+      />
       <MarketDiscovery categories={shopCategories} items={items} />
     </div>
   );
