@@ -116,7 +116,15 @@ export function getAuthCookieNames(cookies: CookieMap = {}) {
   return Object.keys(cookies).filter(
     (name) =>
       name === ACCESS_TOKEN_COOKIE_NAME ||
-      (name.startsWith("sb-") && name.includes("auth-token"))
+      (name.startsWith("sb-") &&
+        name.includes("auth-token") &&
+        !name.includes("code-verifier"))
+  );
+}
+
+export function getOAuthCookieNames(cookies: CookieMap = {}) {
+  return Object.keys(cookies).filter(
+    (name) => name.startsWith("sb-") && name.includes("code-verifier")
   );
 }
 
@@ -130,7 +138,11 @@ export function extractAccessTokenFromCookies(cookies: CookieMap = {}) {
   }
 
   for (const [name, value] of Object.entries(cookies)) {
-    if (!name.startsWith("sb-") || !name.includes("auth-token")) {
+    if (
+      !name.startsWith("sb-") ||
+      !name.includes("auth-token") ||
+      name.includes("code-verifier")
+    ) {
       continue;
     }
 
@@ -143,6 +155,7 @@ export function extractAccessTokenFromCookies(cookies: CookieMap = {}) {
 
   const chunkBaseNames = new Set(
     Object.keys(cookies)
+      .filter((name) => !name.includes("code-verifier"))
       .map((name) => name.match(/^(sb-.+auth-token)\.\d+$/)?.[1])
       .filter((name): name is string => Boolean(name))
   );

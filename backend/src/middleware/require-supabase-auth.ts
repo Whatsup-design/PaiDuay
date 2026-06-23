@@ -1,10 +1,14 @@
 import type { RequestHandler } from "express";
 
-import { env } from "../env.js";
 import {
   extractAccessTokenFromCookies,
-  getAuthCookieNames
 } from "../lib/auth-token.js";
+import {
+  buildUnauthorizedDetails,
+  getAuthRequestDebug,
+  getSafeErrorDetails,
+  logAuthDebug
+} from "../lib/auth-debug.js";
 import { supabase } from "../lib/supabase.js";
 
 function getBearerToken(authorizationHeader: string | undefined) {
@@ -29,23 +33,14 @@ function getRequestToken(req: Parameters<RequestHandler>[0]) {
   );
 }
 
-function buildUnauthorizedDetails(req: Parameters<RequestHandler>[0]) {
-  if (env.NODE_ENV === "production") {
-    return undefined;
-  }
-
-  return {
-    hasAuthorizationHeader: Boolean(req.headers.authorization),
-    authCookieNames: getAuthCookieNames(req.cookies),
-    host: req.headers.host,
-    origin: req.headers.origin ?? null
-  };
-}
-
 export const requireSupabaseAuth: RequestHandler = async (req, res, next) => {
   const token = getRequestToken(req);
 
   if (!token) {
+    logAuthDebug("warn", "Protected route rejected missing auth token", {
+      request: getAuthRequestDebug(req)
+    });
+
     return res.status(401).json({
       message: "Authentication required. Please login.",
       redirectTo: "/login",
@@ -57,6 +52,11 @@ export const requireSupabaseAuth: RequestHandler = async (req, res, next) => {
     const { data, error } = await supabase.auth.getUser(token);
 
     if (error || !data.user) {
+      logAuthDebug("warn", "Protected route rejected invalid auth token", {
+        request: getAuthRequestDebug(req),
+        error: getSafeErrorDetails(error)
+      });
+
       return res.status(401).json({
         message: "Session expired or invalid. Please login again.",
         redirectTo: "/login",
@@ -71,6 +71,11 @@ export const requireSupabaseAuth: RequestHandler = async (req, res, next) => {
 
     return next();
   } catch (error) {
+    logAuthDebug("error", "Protected route auth verification failed", {
+      request: getAuthRequestDebug(req),
+      error: getSafeErrorDetails(error)
+    });
+
     return res.status(401).json({
       message: "Unable to verify session. Please login again.",
       redirectTo: "/login",
