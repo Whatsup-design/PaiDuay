@@ -3,7 +3,12 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { storeAuthSession, type AuthSession } from "@/lib/auth-session";
+import {
+  getAuthSessionDebug,
+  storeAuthSession,
+  type AuthSession,
+  type AuthSessionDebug
+} from "@/lib/auth-session";
 
 function getSafeNextPath(value: string | null) {
   if (!value?.startsWith("/")) {
@@ -13,32 +18,74 @@ function getSafeNextPath(value: string | null) {
   return value;
 }
 
-function getSessionFromHash(): { session: AuthSession; nextPath: string } {
+type CallbackDebug = {
+  href: string;
+  hashKeys: string[];
+  queryKeys: string[];
+  hasHashAccessToken: boolean;
+  hasQueryAccessToken: boolean;
+  beforeStore?: AuthSessionDebug;
+  afterStore?: AuthSessionDebug;
+};
+
+function getCallbackParams() {
   const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const queryParams = new URLSearchParams(window.location.search);
+
+  return {
+    hashParams,
+    queryParams
+  };
+}
+
+function getSessionFromCallback(): { session: AuthSession; nextPath: string } {
+  const { hashParams, queryParams } = getCallbackParams();
   const accessToken = hashParams.get("access_token");
-  const refreshToken = hashParams.get("refresh_token") ?? undefined;
-  const expiresAtRaw = hashParams.get("expires_at");
+  const queryAccessToken = queryParams.get("access_token");
+  const refreshToken =
+    hashParams.get("refresh_token") ?? queryParams.get("refresh_token") ?? undefined;
+  const expiresAtRaw = hashParams.get("expires_at") ?? queryParams.get("expires_at");
   const expiresAt =
     expiresAtRaw === null ? undefined : Number.parseInt(expiresAtRaw, 10);
 
   return {
-    session: accessToken
+    session: accessToken || queryAccessToken
       ? {
-          access_token: accessToken,
+          access_token: accessToken ?? queryAccessToken ?? "",
           refresh_token: refreshToken,
           expires_at: Number.isFinite(expiresAt) ? expiresAt : undefined
         }
       : null,
-    nextPath: getSafeNextPath(hashParams.get("next"))
+    nextPath: getSafeNextPath(hashParams.get("next") ?? queryParams.get("next"))
+  };
+}
+
+function getSafeCallbackDebug(): CallbackDebug {
+  const { hashParams, queryParams } = getCallbackParams();
+
+  return {
+    href: `${window.location.origin}${window.location.pathname}`,
+    hashKeys: Array.from(hashParams.keys()),
+    queryKeys: Array.from(queryParams.keys()),
+    hasHashAccessToken: Boolean(hashParams.get("access_token")),
+    hasQueryAccessToken: Boolean(queryParams.get("access_token"))
   };
 }
 
 export default function AuthCallbackPage() {
   const [message, setMessage] = useState("Completing Google login...");
   const [canGoLogin, setCanGoLogin] = useState(false);
+  const [debug, setDebug] = useState<CallbackDebug | null>(null);
 
   useEffect(() => {
-    const { session, nextPath } = getSessionFromHash();
+    const callbackDebug = getSafeCallbackDebug();
+    const beforeStore = getAuthSessionDebug();
+    const { session, nextPath } = getSessionFromCallback();
+
+    setDebug({
+      ...callbackDebug,
+      beforeStore
+    });
 
     if (!session?.access_token) {
       setMessage("Google login did not return a session token.");
@@ -47,6 +94,13 @@ export default function AuthCallbackPage() {
     }
 
     const isStored = storeAuthSession(session);
+    const afterStore = getAuthSessionDebug();
+
+    setDebug({
+      ...callbackDebug,
+      beforeStore,
+      afterStore
+    });
 
     if (!isStored) {
       setMessage("The browser could not store your Google login session.");
@@ -73,6 +127,12 @@ export default function AuthCallbackPage() {
           >
             Go to login
           </Link>
+        ) : null}
+
+        {debug ? (
+          <pre className="mt-6 max-h-64 overflow-auto rounded-md bg-neutral-950 p-4 text-left text-xs leading-5 text-neutral-100">
+            {JSON.stringify(debug, null, 2)}
+          </pre>
         ) : null}
       </section>
     </main>

@@ -8,6 +8,17 @@ export type AuthSession = {
   expires_at?: number;
 } | null;
 
+export type AuthSessionDebug = {
+  isBrowser: boolean;
+  hasLocalStorageToken: boolean;
+  hasCookieToken: boolean;
+  hasSupabaseLocalStorageToken: boolean;
+  hasSupabaseCookieToken: boolean;
+  authCookieNames: string[];
+  localStorageAvailable: boolean;
+  cookieWriteAvailable: boolean;
+};
+
 function isBrowser() {
   return typeof window !== "undefined";
 }
@@ -41,13 +52,17 @@ export function storeAuthSession(session: AuthSession) {
     return false;
   }
 
-  window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, session.access_token);
+  try {
+    window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, session.access_token);
 
-  if (session.refresh_token) {
-    window.localStorage.setItem(
-      REFRESH_TOKEN_STORAGE_KEY,
-      session.refresh_token
-    );
+    if (session.refresh_token) {
+      window.localStorage.setItem(
+        REFRESH_TOKEN_STORAGE_KEY,
+        session.refresh_token
+      );
+    }
+  } catch {
+    return false;
   }
 
   const maxAge =
@@ -58,6 +73,7 @@ export function storeAuthSession(session: AuthSession) {
     `${ACCESS_TOKEN_COOKIE_NAME}=${encodeURIComponent(session.access_token)}`,
     "path=/",
     "samesite=lax",
+    ...(window.location.protocol === "https:" ? ["secure"] : []),
     ...(maxAge !== undefined ? [`max-age=${maxAge}`] : [])
   ];
 
@@ -74,6 +90,75 @@ export function clearAuthSession() {
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
   window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+}
+
+export function getAuthSessionDebug(): AuthSessionDebug {
+  if (!isBrowser()) {
+    return {
+      isBrowser: false,
+      hasLocalStorageToken: false,
+      hasCookieToken: false,
+      hasSupabaseLocalStorageToken: false,
+      hasSupabaseCookieToken: false,
+      authCookieNames: [],
+      localStorageAvailable: false,
+      cookieWriteAvailable: false
+    };
+  }
+
+  return {
+    isBrowser: true,
+    hasLocalStorageToken: Boolean(
+      extractAccessTokenFromValue(
+        window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)
+      )
+    ),
+    hasCookieToken: Boolean(
+      extractAccessTokenFromValue(getCookieValue(ACCESS_TOKEN_COOKIE_NAME))
+    ),
+    hasSupabaseLocalStorageToken: Boolean(getSupabaseStoredAccessToken()),
+    hasSupabaseCookieToken: Boolean(getSupabaseCookieAccessToken()),
+    authCookieNames: document.cookie
+      .split("; ")
+      .filter(Boolean)
+      .map((cookie) => cookie.split("=")[0])
+      .filter(
+        (name) =>
+          name === ACCESS_TOKEN_COOKIE_NAME ||
+          (name.startsWith("sb-") && name.includes("auth-token"))
+      ),
+    localStorageAvailable: canUseLocalStorage(),
+    cookieWriteAvailable: canWriteCookie()
+  };
+}
+
+function canUseLocalStorage() {
+  try {
+    const key = "paiduay_storage_test";
+
+    window.localStorage.setItem(key, "1");
+    window.localStorage.removeItem(key);
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function canWriteCookie() {
+  try {
+    const key = "paiduay_cookie_test";
+
+    document.cookie = `${key}=1; path=/; samesite=lax`;
+    const canRead = document.cookie
+      .split("; ")
+      .some((cookie) => cookie === `${key}=1`);
+    document.cookie = `${key}=; path=/; max-age=0; samesite=lax`;
+
+    return canRead;
+  } catch {
+    return false;
+  }
 }
 
 function getCookieValue(name: string) {
