@@ -1,10 +1,8 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { VillageDetailContent } from "@/components/otop/village-detail-content";
-import { VillageDetailHero } from "@/components/otop/village-detail-hero";
+import { VillageDetailPageContent } from "@/components/otop/village-detail-loader";
 import type { Village } from "@/app/(main)/otop/data";
-import { api, ApiError, type ApiResponse } from "@/lib/api";
+import { ApiError, type ApiResponse } from "@/lib/api";
+import { serverApi } from "@/lib/server-api";
+import { notFound } from "next/navigation";
 
 type OtopVillageDetailPageProps = {
   params: Promise<{
@@ -16,10 +14,10 @@ export default async function OtopVillageDetailPage({
   params
 }: OtopVillageDetailPageProps) {
   const { id } = await params;
-  let village: Village | null = null;
+  let village: Village;
 
   try {
-    const response = await api.get<ApiResponse<Village>>(
+    const response = await serverApi.get<ApiResponse<Village>>(
       `/user/otop/villages/${encodeURIComponent(id)}`
     );
     village = response.data;
@@ -31,25 +29,10 @@ export default async function OtopVillageDetailPage({
     throw error;
   }
 
-  if (!village) {
-    notFound();
-  }
-
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-white px-4 py-5 sm:px-5 lg:px-8 lg:py-6">
-      <div className="mx-auto max-w-7xl space-y-4">
-        <Link
-          href="/otop"
-          className="inline-flex h-10 items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50 hover:text-neutral-950"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to OTOP
-        </Link>
-
-        <div className="space-y-6">
-          <VillageDetailHero village={village} />
-          <VillageDetailContent village={village} />
-        </div>
+      <div className="mx-auto max-w-7xl">
+        <VillageDetailPageContent village={village} />
       </div>
     </main>
   );

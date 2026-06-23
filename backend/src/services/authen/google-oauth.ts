@@ -1,8 +1,15 @@
-import { supabase } from "../../lib/supabase.js";
-import { env } from "../../env.js";
+import type { Request, Response } from "express";
 
-export async function createGoogleOAuthUrl(nextPath = "/") {
-  const { data, error } = await supabase.auth.signInWithOAuth({
+import { env } from "../../env.js";
+import { createSupabaseOAuthClient } from "../../lib/supabase.js";
+
+export async function createGoogleOAuthUrl(
+  req: Request,
+  res: Response,
+  nextPath = "/"
+) {
+  const supabaseOAuth = createSupabaseOAuthClient(req, res);
+  const { data, error } = await supabaseOAuth.auth.signInWithOAuth({
     provider: "google",
     options: {
       redirectTo: `${env.AUTH_GOOGLE_REDIRECT_URL}?next=${encodeURIComponent(nextPath)}`,
@@ -24,8 +31,13 @@ export async function createGoogleOAuthUrl(nextPath = "/") {
   return data.url;
 }
 
-export async function exchangeGoogleOAuthCode(code: string) {
-  const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+export async function exchangeGoogleOAuthCode(
+  req: Request,
+  res: Response,
+  code: string
+) {
+  const supabaseOAuth = createSupabaseOAuthClient(req, res);
+  const { data, error } = await supabaseOAuth.auth.exchangeCodeForSession(code);
 
   if (error) {
     throw new Error(error.message);

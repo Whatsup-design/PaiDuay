@@ -38,6 +38,26 @@ export function LoginForm({ registrationMessage }: LoginFormProps) {
         </div>
 
         <form className="space-y-8" onSubmit={handleLoginSubmit} noValidate>
+          <a
+            href={getGoogleOAuthUrl("/home")}
+            className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-md border border-neutral-200 bg-white text-sm font-semibold text-neutral-900 shadow-[var(--shadow-sm)] transition hover:bg-neutral-50"
+          >
+            <Image
+              src="/google-provider-icon.webp"
+              alt=""
+              width={20}
+              height={20}
+              aria-hidden="true"
+            />
+            Continue with Google
+          </a>
+
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-neutral-200" />
+            <span className="text-sm font-normal text-neutral-400">or</span>
+            <div className="h-px flex-1 bg-neutral-200" />
+          </div>
+
           <input
             id="email"
             name="email"
@@ -91,26 +111,6 @@ export function LoginForm({ registrationMessage }: LoginFormProps) {
               {statusMessage}
             </p>
           ) : null}
-
-          <div className="flex items-center gap-4">
-            <div className="h-px flex-1 bg-neutral-200" />
-            <span className="text-sm font-normal text-neutral-400">or</span>
-            <div className="h-px flex-1 bg-neutral-200" />
-          </div>
-
-          <a
-            href={getGoogleOAuthUrl("/home")}
-            className="flex h-12 w-full cursor-pointer items-center justify-center gap-3 rounded-md border border-neutral-200 bg-white text-sm font-semibold text-neutral-900 shadow-[var(--shadow-sm)] transition hover:bg-neutral-50"
-          >
-            <Image
-              src="/google-provider-icon.webp"
-              alt=""
-              width={20}
-              height={20}
-              aria-hidden="true"
-            />
-            Continue with Google
-          </a>
         </form>
 
         <p className="mt-8 text-center text-sm text-neutral-400">

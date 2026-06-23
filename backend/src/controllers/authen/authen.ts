@@ -68,6 +68,29 @@ function buildFrontendRedirectUrl(baseUrl: string, nextPath: string) {
   return new URL(nextPath, baseUrl).toString();
 }
 
+function isSecureRequest(req: Request) {
+  return req.secure || req.headers["x-forwarded-proto"] === "https";
+}
+
+function setAuthCookies(
+  req: Request,
+  res: Response,
+  session: { access_token: string; expires_at?: number }
+) {
+  const maxAge =
+    session.expires_at === undefined
+      ? undefined
+      : Math.max(session.expires_at * 1000 - Date.now(), 0);
+
+  res.cookie("paiduay_access_token", session.access_token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isSecureRequest(req),
+    path: "/",
+    ...(maxAge !== undefined ? { maxAge } : {})
+  });
+}
+
 export async function loginController(req: Request, res: Response) {
   const parsedBody = loginSchema.safeParse(req.body);
 
@@ -80,6 +103,10 @@ export async function loginController(req: Request, res: Response) {
 
   try {
     const data = await loginWithEmailPassword(parsedBody.data);
+
+    if (data.session?.access_token) {
+      setAuthCookies(req, res, data.session);
+    }
 
     return res.status(200).json({
       message: "Login successful",
@@ -150,7 +177,11 @@ export async function googleOAuthStartController(req: Request, res: Response) {
   }
 
   try {
-    const oauthUrl = await createGoogleOAuthUrl(parsedQuery.data.next);
+    const oauthUrl = await createGoogleOAuthUrl(
+      req,
+      res,
+      parsedQuery.data.next
+    );
 
     return res.redirect(oauthUrl);
   } catch (error) {
@@ -176,7 +207,15 @@ export async function googleOAuthCallbackController(
   }
 
   try {
-    await exchangeGoogleOAuthCode(parsedQuery.data.code);
+    const data = await exchangeGoogleOAuthCode(
+      req,
+      res,
+      parsedQuery.data.code
+    );
+
+    if (data.session?.access_token) {
+      setAuthCookies(req, res, data.session);
+    }
 
     return res.redirect(
       buildFrontendRedirectUrl(

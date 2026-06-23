@@ -28,9 +28,17 @@ export function RewardCard({ reward }: RewardCardProps) {
   return (
     <article className="group grid h-[25rem] grid-rows-[8rem_minmax(0,1fr)_4rem] overflow-hidden rounded-lg border border-neutral-200/80 bg-white shadow-[0_8px_24px_rgb(15_23_42_/_7%)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_34px_rgb(15_23_42_/_10%)]">
       <div className="relative overflow-hidden bg-neutral-50">
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${reward.gradient} opacity-55 grayscale-[12%] transition duration-300 group-hover:opacity-70`}
-        />
+        {reward.imageUrl ? (
+          <img
+            src={reward.imageUrl}
+            alt={reward.imageAlt ?? reward.title}
+            className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${reward.gradient} opacity-55 grayscale-[12%] transition duration-300 group-hover:opacity-70`}
+          />
+        )}
         <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/55 to-transparent" />
         <span
           className={`absolute left-4 top-4 rounded-full px-2.5 py-1 text-[11px] font-semibold ${statusClassName[reward.status]}`}
@@ -79,6 +87,13 @@ export function RewardCard({ reward }: RewardCardProps) {
           </p>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-5 bg-gradient-to-t from-white to-white/0" />
         </div>
+
+        {reward.limitedQuantity && (
+          <p className="mt-2 rounded-md bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700">
+            Limited: {reward.quantityRemaining ?? 0}
+            {reward.quantityLimit !== null ? `/${reward.quantityLimit}` : ""} left
+          </p>
+        )}
       </div>
       <div className="border-t border-neutral-100 bg-white p-3">
         <button

@@ -1,6 +1,8 @@
+import { getStoredAccessToken } from "@/lib/auth-session";
+
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
-  "http://127.0.0.1:3001";
+  "http://localhost:3001";
 
 const DEFAULT_API_TIMEOUT_MS = 10000;
 
@@ -17,17 +19,29 @@ export type ApiFetchOptions = Omit<RequestInit, "body"> & {
 type ApiErrorPayload = {
   message?: string;
   errors?: unknown;
+  details?: unknown;
+  redirectTo?: string;
 };
 
 export class ApiError extends Error {
   status: number;
   errors?: unknown;
+  details?: unknown;
+  redirectTo?: string;
 
-  constructor(message: string, status: number, errors?: unknown) {
+  constructor(
+    message: string,
+    status: number,
+    errors?: unknown,
+    details?: unknown,
+    redirectTo?: string
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.errors = errors;
+    this.details = details;
+    this.redirectTo = redirectTo;
   }
 }
 
@@ -70,10 +84,13 @@ export async function apiFetch<TResponse>(
   let response: Response;
 
   try {
+    const accessToken = getStoredAccessToken();
+
     response = await fetch(buildApiUrl(path), {
       ...fetchOptions,
       headers: {
         "Content-Type": "application/json",
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         ...fetchOptions.headers
       },
       body: body === undefined ? undefined : JSON.stringify(body),
@@ -103,7 +120,9 @@ export async function apiFetch<TResponse>(
     throw new ApiError(
       errorPayload?.message ?? "Request failed",
       response.status,
-      errorPayload?.errors
+      errorPayload?.errors,
+      errorPayload?.details,
+      errorPayload?.redirectTo
     );
   }
 

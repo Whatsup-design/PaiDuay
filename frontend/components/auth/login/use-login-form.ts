@@ -8,7 +8,7 @@ import {
 } from "@/components/auth/helpers/auth-validation";
 import { ApiError } from "@/lib/api";
 import { login } from "@/lib/auth-api";
-import { useRouter } from "next/navigation";
+import { storeAuthSession } from "@/lib/auth-session";
 import { useRef, useState } from "react";
 
 type LoginField = "email" | "password";
@@ -54,7 +54,6 @@ function getSafeLoginErrorMessage(error: unknown) {
 }
 
 export function useLoginForm() {
-  const router = useRouter();
   const submitLockRef = useRef(false);
   const [errors, setErrors] = useState<LoginErrors>({});
   const [statusMessage, setStatusMessage] = useState("");
@@ -83,11 +82,23 @@ export function useLoginForm() {
     setStatusMessage("");
 
     try {
-      await login(payload);
+      const response = await login(payload);
+
+      if (!response.data.session?.access_token) {
+        setStatusMessage("Login succeeded but no session token was returned.");
+        return;
+      }
+
+      const isSessionStored = storeAuthSession(response.data.session);
+
+      if (!isSessionStored) {
+        setStatusMessage("Login succeeded but the browser did not store the session.");
+        return;
+      }
 
       setErrors({});
       form.reset();
-      router.push("/home");
+      window.location.assign("/home");
     } catch (error) {
       setStatusMessage(getSafeLoginErrorMessage(error));
     } finally {
