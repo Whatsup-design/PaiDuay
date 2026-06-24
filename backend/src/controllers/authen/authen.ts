@@ -4,7 +4,8 @@ import { z } from "zod";
 import { env } from "../../env.js";
 import {
   createGoogleOAuthUrl,
-  exchangeGoogleOAuthCode
+  exchangeGoogleOAuthCode,
+  getCurrentAuthSession
 } from "../../services/authen/google-oauth.js";
 import { loginWithEmailPassword } from "../../services/authen/login.js";
 import { signUpWithEmailPassword } from "../../services/authen/signup.js";
@@ -66,6 +67,14 @@ function isTemporaryLoginError(message: string) {
 
 function buildFrontendRedirectUrl(baseUrl: string, nextPath: string) {
   return new URL(nextPath, baseUrl).toString();
+}
+
+function buildOAuthSyncRedirectUrl(baseUrl: string, nextPath: string) {
+  const syncUrl = new URL("/auth/oauth/sync", baseUrl);
+
+  syncUrl.searchParams.set("next", nextPath);
+
+  return syncUrl.toString();
 }
 
 function isSecureRequest(req: Request) {
@@ -242,13 +251,34 @@ export async function googleOAuthCallbackController(
     }
 
     return res.redirect(
-      buildFrontendRedirectUrl(
+      buildOAuthSyncRedirectUrl(
         env.AUTH_SUCCESS_REDIRECT_URL,
         parsedQuery.data.next
       )
     );
   } catch (error) {
     return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_failed`);
+  }
+}
+
+export async function sessionController(req: Request, res: Response) {
+  try {
+    const data = await getCurrentAuthSession(req, res);
+
+    if (!data?.session?.access_token) {
+      return res.status(401).json({
+        message: "No active session"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Session fetched successfully",
+      data
+    });
+  } catch {
+    return res.status(401).json({
+      message: "No active session"
+    });
   }
 }
 

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 
 import { env } from "../../env.js";
-import { createSupabaseOAuthClient } from "../../lib/supabase.js";
+import { createSupabaseOAuthClient, supabase } from "../../lib/supabase.js";
 
 export async function createGoogleOAuthUrl(
   req: Request,
@@ -46,5 +46,40 @@ export async function exchangeGoogleOAuthCode(
   return {
     user: data.user,
     session: data.session
+  };
+}
+
+export async function getCurrentAuthSession(req: Request, res: Response) {
+  const supabaseOAuth = createSupabaseOAuthClient(req, res);
+  const sessionResult = await supabaseOAuth.auth.getSession();
+
+  if (sessionResult.error) {
+    throw new Error(sessionResult.error.message);
+  }
+
+  if (sessionResult.data.session) {
+    return {
+      user: sessionResult.data.session.user,
+      session: sessionResult.data.session
+    };
+  }
+
+  const accessToken = req.cookies?.paiduay_access_token;
+
+  if (typeof accessToken !== "string") {
+    return null;
+  }
+
+  const userResult = await supabase.auth.getUser(accessToken);
+
+  if (userResult.error || !userResult.data.user) {
+    return null;
+  }
+
+  return {
+    user: userResult.data.user,
+    session: {
+      access_token: accessToken
+    }
   };
 }

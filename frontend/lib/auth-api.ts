@@ -19,7 +19,7 @@ type SupabaseAuthUser = {
 
 type SupabaseSession = {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string;
   expires_at?: number;
 };
 
@@ -40,6 +40,8 @@ export type LoginResponse = {
     session: SupabaseSession | null;
   };
 };
+
+export type CurrentSessionResponse = LoginResponse;
 
 export type LogoutResponse = {
   message: string;
@@ -64,6 +66,10 @@ export function logout() {
   return apiFetch<LogoutResponse>("/authen/logout", {
     method: "POST"
   });
+}
+
+export function getCurrentSession() {
+  return apiFetch<CurrentSessionResponse>("/authen/session");
 }
 
 export function getGoogleOAuthUrl(nextPath = "/home") {
