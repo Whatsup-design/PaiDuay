@@ -90,6 +90,8 @@ export function clearAuthSession() {
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
   window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  clearSupabaseStoredAuth();
+  clearSupabaseAuthCookies();
 }
 
 export function getAuthSessionDebug(): AuthSessionDebug {
@@ -284,6 +286,29 @@ function getSupabaseStoredAccessToken() {
   return null;
 }
 
+function clearSupabaseStoredAuth() {
+  const keysToRemove: string[] = [];
+
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+
+    if (!key?.startsWith("sb-")) {
+      continue;
+    }
+
+    const isAuthStorageKey =
+      key.endsWith("-auth-token") || key.includes("code-verifier");
+
+    if (isAuthStorageKey) {
+      keysToRemove.push(key);
+    }
+  }
+
+  for (const key of keysToRemove) {
+    window.localStorage.removeItem(key);
+  }
+}
+
 function getSupabaseCookieAccessToken() {
   const cookies = document.cookie.split("; ").filter(Boolean);
 
@@ -339,4 +364,20 @@ function getSupabaseCookieAccessToken() {
   }
 
   return null;
+}
+
+function clearSupabaseAuthCookies() {
+  const cookies = document.cookie.split("; ").filter(Boolean);
+
+  for (const cookie of cookies) {
+    const separatorIndex = cookie.indexOf("=");
+    const name = separatorIndex >= 0 ? cookie.slice(0, separatorIndex) : cookie;
+    const isSupabaseAuthCookie =
+      name.startsWith("sb-") &&
+      (name.includes("auth-token") || name.includes("code-verifier"));
+
+    if (isSupabaseAuthCookie) {
+      document.cookie = `${name}=; path=/; max-age=0; samesite=lax`;
+    }
+  }
 }

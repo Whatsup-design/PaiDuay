@@ -4,7 +4,8 @@ import { z } from "zod";
 import { env } from "../../env.js";
 import {
   createGoogleOAuthUrl,
-  exchangeGoogleOAuthCode
+  exchangeGoogleOAuthCode,
+  getCurrentAuthSession
 } from "../../services/authen/google-oauth.js";
 import {
   getAuthRequestDebug,
@@ -136,6 +137,30 @@ function setAuthCookies(
     path: "/",
     ...(maxAge !== undefined ? { maxAge } : {})
   });
+}
+
+function clearAuthCookie(req: Request, res: Response, name: string) {
+  res.clearCookie(name, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isSecureRequest(req),
+    path: "/"
+  });
+}
+
+function clearAuthCookies(req: Request, res: Response) {
+  clearAuthCookie(req, res, "paiduay_access_token");
+
+  for (const cookieName of Object.keys(req.cookies ?? {})) {
+    const isSupabaseAuthCookie =
+      cookieName.startsWith("sb-") &&
+      (cookieName.includes("auth-token") ||
+        cookieName.includes("code-verifier"));
+
+    if (isSupabaseAuthCookie) {
+      clearAuthCookie(req, res, cookieName);
+    }
+  }
 }
 
 export async function loginController(req: Request, res: Response) {
@@ -333,4 +358,34 @@ export async function googleOAuthCallbackController(
 
     return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_failed`);
   }
+}
+
+export async function sessionController(req: Request, res: Response) {
+  try {
+    const data = await getCurrentAuthSession(req, res);
+
+    if (!data?.session?.access_token) {
+      return res.status(401).json({
+        message: "No active session"
+      });
+    }
+
+    return res.status(200).json({
+      message: "Session fetched successfully",
+      data
+    });
+  } catch {
+    return res.status(401).json({
+      message: "No active session"
+    });
+  }
+}
+
+export async function logoutController(req: Request, res: Response) {
+  clearAuthCookies(req, res);
+
+  return res.status(200).json({
+    message: "Logout successful",
+    data: null
+  });
 }

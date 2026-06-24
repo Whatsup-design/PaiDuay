@@ -19,7 +19,7 @@ type SupabaseAuthUser = {
 
 type SupabaseSession = {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string;
   expires_at?: number;
 };
 
@@ -41,6 +41,13 @@ export type LoginResponse = {
   };
 };
 
+export type CurrentSessionResponse = LoginResponse;
+
+export type LogoutResponse = {
+  message: string;
+  data: null;
+};
+
 export function login(input: LoginRequest) {
   return apiFetch<LoginResponse>("/authen/login", {
     method: "POST",
@@ -53,6 +60,16 @@ export function signUp(input: SignUpRequest) {
     method: "POST",
     body: input
   });
+}
+
+export function logout() {
+  return apiFetch<LogoutResponse>("/authen/logout", {
+    method: "POST"
+  });
+}
+
+export function getCurrentSession() {
+  return apiFetch<CurrentSessionResponse>("/authen/session");
 }
 
 export function getGoogleOAuthUrl(nextPath = "/home") {
