@@ -4,7 +4,7 @@ import { ApiError } from "@/lib/api";
 
 export const SERVER_API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
-  "http://localhost:3001";
+  "http://127.0.0.1:3001";
 
 type ApiErrorPayload = {
   message?: string;
@@ -99,18 +99,3 @@ export const serverApi = {
     });
   }
 };
-
-export function getPageAuthDetails(error: unknown) {
-  if (!(error instanceof ApiError)) {
-    return null;
-  }
-
-  return JSON.stringify(
-    {
-      browserTokenDetected: null,
-      backendDetails: error.details ?? null
-    },
-    null,
-    2
-  );
-}

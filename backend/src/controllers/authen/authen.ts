@@ -91,6 +91,30 @@ function setAuthCookies(
   });
 }
 
+function clearAuthCookie(req: Request, res: Response, name: string) {
+  res.clearCookie(name, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: isSecureRequest(req),
+    path: "/"
+  });
+}
+
+function clearAuthCookies(req: Request, res: Response) {
+  clearAuthCookie(req, res, "paiduay_access_token");
+
+  for (const cookieName of Object.keys(req.cookies ?? {})) {
+    const isSupabaseAuthCookie =
+      cookieName.startsWith("sb-") &&
+      (cookieName.includes("auth-token") ||
+        cookieName.includes("code-verifier"));
+
+    if (isSupabaseAuthCookie) {
+      clearAuthCookie(req, res, cookieName);
+    }
+  }
+}
+
 export async function loginController(req: Request, res: Response) {
   const parsedBody = loginSchema.safeParse(req.body);
 
@@ -226,4 +250,13 @@ export async function googleOAuthCallbackController(
   } catch (error) {
     return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_failed`);
   }
+}
+
+export async function logoutController(req: Request, res: Response) {
+  clearAuthCookies(req, res);
+
+  return res.status(200).json({
+    message: "Logout successful",
+    data: null
+  });
 }

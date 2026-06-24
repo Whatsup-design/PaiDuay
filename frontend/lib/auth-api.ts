@@ -41,6 +41,11 @@ export type LoginResponse = {
   };
 };
 
+export type LogoutResponse = {
+  message: string;
+  data: null;
+};
+
 export function login(input: LoginRequest) {
   return apiFetch<LoginResponse>("/authen/login", {
     method: "POST",
@@ -52,6 +57,12 @@ export function signUp(input: SignUpRequest) {
   return apiFetch<SignUpResponse>("/authen/signup", {
     method: "POST",
     body: input
+  });
+}
+
+export function logout() {
+  return apiFetch<LogoutResponse>("/authen/logout", {
+    method: "POST"
   });
 }
 

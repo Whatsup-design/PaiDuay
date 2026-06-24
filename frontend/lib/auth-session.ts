@@ -41,13 +41,17 @@ export function storeAuthSession(session: AuthSession) {
     return false;
   }
 
-  window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, session.access_token);
+  try {
+    window.localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, session.access_token);
 
-  if (session.refresh_token) {
-    window.localStorage.setItem(
-      REFRESH_TOKEN_STORAGE_KEY,
-      session.refresh_token
-    );
+    if (session.refresh_token) {
+      window.localStorage.setItem(
+        REFRESH_TOKEN_STORAGE_KEY,
+        session.refresh_token
+      );
+    }
+  } catch {
+    return false;
   }
 
   const maxAge =
@@ -58,6 +62,7 @@ export function storeAuthSession(session: AuthSession) {
     `${ACCESS_TOKEN_COOKIE_NAME}=${encodeURIComponent(session.access_token)}`,
     "path=/",
     "samesite=lax",
+    ...(window.location.protocol === "https:" ? ["secure"] : []),
     ...(maxAge !== undefined ? [`max-age=${maxAge}`] : [])
   ];
 
@@ -74,6 +79,8 @@ export function clearAuthSession() {
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
   window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  clearSupabaseStoredAuth();
+  clearSupabaseAuthCookies();
 }
 
 function getCookieValue(name: string) {
@@ -199,6 +206,29 @@ function getSupabaseStoredAccessToken() {
   return null;
 }
 
+function clearSupabaseStoredAuth() {
+  const keysToRemove: string[] = [];
+
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+
+    if (!key?.startsWith("sb-")) {
+      continue;
+    }
+
+    const isAuthStorageKey =
+      key.endsWith("-auth-token") || key.includes("code-verifier");
+
+    if (isAuthStorageKey) {
+      keysToRemove.push(key);
+    }
+  }
+
+  for (const key of keysToRemove) {
+    window.localStorage.removeItem(key);
+  }
+}
+
 function getSupabaseCookieAccessToken() {
   const cookies = document.cookie.split("; ").filter(Boolean);
 
@@ -254,4 +284,20 @@ function getSupabaseCookieAccessToken() {
   }
 
   return null;
+}
+
+function clearSupabaseAuthCookies() {
+  const cookies = document.cookie.split("; ").filter(Boolean);
+
+  for (const cookie of cookies) {
+    const separatorIndex = cookie.indexOf("=");
+    const name = separatorIndex >= 0 ? cookie.slice(0, separatorIndex) : cookie;
+    const isSupabaseAuthCookie =
+      name.startsWith("sb-") &&
+      (name.includes("auth-token") || name.includes("code-verifier"));
+
+    if (isSupabaseAuthCookie) {
+      document.cookie = `${name}=; path=/; max-age=0; samesite=lax`;
+    }
+  }
 }

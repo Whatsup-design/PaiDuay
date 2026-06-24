@@ -1,4 +1,5 @@
-import { Bell, LogOut, Menu, Search } from "lucide-react";
+import { Bell, Menu, Search } from "lucide-react";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 type TopBarProps = {
   isSidebarCollapsed: boolean;
@@ -66,13 +67,7 @@ export function TopBar({
           <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-white" />
         </button>
 
-        <button
-          type="button"
-          aria-label="Logout"
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-sky-100 transition hover:bg-sky-900 hover:text-white"
-        >
-          <LogOut className="h-4 w-4" />
-        </button>
+        <SignOutButton className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-sky-100 transition hover:bg-sky-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-60" />
       </div>
     </header>
   );
