@@ -5,7 +5,6 @@ import {
 import type { Request, Response } from "express";
 
 import { env } from "../env.js";
-import { getAuthRequestDebug, logAuthDebug } from "./auth-debug.js";
 
 const supabaseOptions = {
   auth: {
@@ -26,9 +25,6 @@ export const supabaseAdmin = env.SUPABASE_SERVICE_ROLE_KEY
   : null;
 
 export function createSupabaseOAuthClient(req: Request, res: Response) {
-  const secureCookie =
-    req.secure || req.headers["x-forwarded-proto"] === "https";
-
   return createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY, {
     auth: {
       autoRefreshToken: false,
@@ -37,46 +33,22 @@ export function createSupabaseOAuthClient(req: Request, res: Response) {
       storage: {
         isServer: true,
         getItem(key: string) {
-          const value = req.cookies?.[key] ?? null;
-
-          logAuthDebug("info", "Supabase OAuth storage read", {
-            request: getAuthRequestDebug(req),
-            key,
-            found: Boolean(value),
-            valueLength: value?.length ?? 0
-          });
-
-          return value;
+          return req.cookies?.[key] ?? null;
         },
         setItem(key: string, value: string) {
-          logAuthDebug("info", "Supabase OAuth storage write", {
-            request: getAuthRequestDebug(req),
-            key,
-            valueLength: value.length,
-            secure: secureCookie,
-            sameSite: "lax"
-          });
-
           res.cookie(key, value, {
             httpOnly: true,
             sameSite: "lax",
-            secure: secureCookie,
+            secure: req.secure || req.headers["x-forwarded-proto"] === "https",
             path: "/",
             maxAge: 10 * 60 * 1000
           });
         },
         removeItem(key: string) {
-          logAuthDebug("info", "Supabase OAuth storage remove", {
-            request: getAuthRequestDebug(req),
-            key,
-            secure: secureCookie,
-            sameSite: "lax"
-          });
-
           res.clearCookie(key, {
             httpOnly: true,
             sameSite: "lax",
-            secure: secureCookie,
+            secure: req.secure || req.headers["x-forwarded-proto"] === "https",
             path: "/"
           });
         }

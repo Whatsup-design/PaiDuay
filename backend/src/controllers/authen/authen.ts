@@ -7,12 +7,6 @@ import {
   exchangeGoogleOAuthCode,
   getCurrentAuthSession
 } from "../../services/authen/google-oauth.js";
-import {
-  getAuthRequestDebug,
-  getOAuthQueryDebug,
-  getSafeErrorDetails,
-  logAuthDebug
-} from "../../lib/auth-debug.js";
 import { loginWithEmailPassword } from "../../services/authen/login.js";
 import { signUpWithEmailPassword } from "../../services/authen/signup.js";
 
@@ -105,19 +99,6 @@ function buildFrontendOAuthCallbackUrl(
 
 function isSecureRequest(req: Request) {
   return req.secure || req.headers["x-forwarded-proto"] === "https";
-}
-
-function logGoogleOAuthCallbackFailure(
-  req: Request,
-  reason: string,
-  error?: unknown
-) {
-  logAuthDebug("error", "Google OAuth callback failed", {
-    reason,
-    request: getAuthRequestDebug(req),
-    query: getOAuthQueryDebug(req),
-    error: getSafeErrorDetails(error)
-  });
 }
 
 function setAuthCookies(
@@ -242,12 +223,6 @@ export async function googleOAuthStartController(req: Request, res: Response) {
   const parsedQuery = googleOAuthStartSchema.safeParse(req.query);
 
   if (!parsedQuery.success) {
-    logAuthDebug("warn", "Google OAuth start rejected invalid query", {
-      request: getAuthRequestDebug(req),
-      query: getOAuthQueryDebug(req),
-      errors: formatZodError(parsedQuery.error)
-    });
-
     return res.status(400).json({
       message: "Invalid Google OAuth query",
       errors: formatZodError(parsedQuery.error)
@@ -255,38 +230,14 @@ export async function googleOAuthStartController(req: Request, res: Response) {
   }
 
   try {
-    logAuthDebug("info", "Google OAuth start received", {
-      request: getAuthRequestDebug(req),
-      next: parsedQuery.data.next,
-      callbackUrl: env.AUTH_GOOGLE_REDIRECT_URL,
-      successRedirectUrl: env.AUTH_SUCCESS_REDIRECT_URL,
-      errorRedirectUrl: env.AUTH_ERROR_REDIRECT_URL
-    });
-
     const oauthUrl = await createGoogleOAuthUrl(
       req,
       res,
       parsedQuery.data.next
     );
 
-    const redirectUrl = new URL(oauthUrl);
-
-    logAuthDebug("info", "Google OAuth start redirecting", {
-      request: getAuthRequestDebug(req),
-      next: parsedQuery.data.next,
-      redirectHost: redirectUrl.host,
-      redirectPath: redirectUrl.pathname,
-      callbackUrl: env.AUTH_GOOGLE_REDIRECT_URL
-    });
-
     return res.redirect(oauthUrl);
   } catch (error) {
-    logAuthDebug("error", "Google OAuth start failed", {
-      request: getAuthRequestDebug(req),
-      next: parsedQuery.data.next,
-      error: getSafeErrorDetails(error)
-    });
-
     return res.status(400).json({
       message:
         error instanceof Error
@@ -300,16 +251,9 @@ export async function googleOAuthCallbackController(
   req: Request,
   res: Response
 ) {
-  logAuthDebug("info", "Google OAuth callback received", {
-    request: getAuthRequestDebug(req),
-    query: getOAuthQueryDebug(req)
-  });
-
   const parsedQuery = googleOAuthCallbackSchema.safeParse(req.query);
 
   if (!parsedQuery.success) {
-    logGoogleOAuthCallbackFailure(req, "invalid_oauth_callback");
-
     return res.redirect(
       `${env.AUTH_ERROR_REDIRECT_URL}?reason=invalid_oauth_callback`
     );
@@ -322,40 +266,20 @@ export async function googleOAuthCallbackController(
       parsedQuery.data.code
     );
 
-    logAuthDebug("info", "Google OAuth callback exchange finished", {
-      request: getAuthRequestDebug(req),
-      next: parsedQuery.data.next,
-      hasSession: Boolean(data.session),
-      hasAccessToken: Boolean(data.session?.access_token),
-      hasRefreshToken: Boolean(data.session?.refresh_token),
-      expiresAt: data.session?.expires_at ?? null
-    });
-
     if (!data.session?.access_token) {
-      logGoogleOAuthCallbackFailure(req, "oauth_no_session");
-
       return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_no_session`);
     }
 
     setAuthCookies(req, res, data.session);
 
-    const callbackUrl = buildFrontendOAuthCallbackUrl(
-      env.AUTH_SUCCESS_REDIRECT_URL,
-      parsedQuery.data.next,
-      data.session
+    return res.redirect(
+      buildFrontendOAuthCallbackUrl(
+        env.AUTH_SUCCESS_REDIRECT_URL,
+        parsedQuery.data.next,
+        data.session
+      )
     );
-
-    logAuthDebug("info", "Google OAuth callback redirecting to frontend", {
-      request: getAuthRequestDebug(req),
-      next: parsedQuery.data.next,
-      frontendCallbackPath: "/auth/callback",
-      frontendHost: new URL(callbackUrl).host
-    });
-
-    return res.redirect(callbackUrl);
   } catch (error) {
-    logGoogleOAuthCallbackFailure(req, "oauth_failed", error);
-
     return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_failed`);
   }
 }
