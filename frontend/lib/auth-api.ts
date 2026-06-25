@@ -1,4 +1,4 @@
-import { apiFetch, buildApiUrl } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export type SignUpRequest = {
   username: string;
@@ -41,8 +41,6 @@ export type LoginResponse = {
   };
 };
 
-export type CurrentSessionResponse = LoginResponse;
-
 export type LogoutResponse = {
   message: string;
   data: null;
@@ -66,14 +64,4 @@ export function logout() {
   return apiFetch<LogoutResponse>("/authen/logout", {
     method: "POST"
   });
-}
-
-export function getCurrentSession() {
-  return apiFetch<CurrentSessionResponse>("/authen/session");
-}
-
-export function getGoogleOAuthUrl(nextPath = "/home") {
-  const params = new URLSearchParams({ next: nextPath });
-
-  return buildApiUrl(`/authen/google?${params.toString()}`);
 }

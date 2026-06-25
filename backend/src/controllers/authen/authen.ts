@@ -1,12 +1,6 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
 
-import { env } from "../../env.js";
-import {
-  createGoogleOAuthUrl,
-  exchangeGoogleOAuthCode,
-  getCurrentAuthSession
-} from "../../services/authen/google-oauth.js";
 import { loginWithEmailPassword } from "../../services/authen/login.js";
 import { signUpWithEmailPassword } from "../../services/authen/signup.js";
 
@@ -26,15 +20,6 @@ const signUpSchema = z
     path: ["confirmPassword"],
     message: "Passwords do not match"
   });
-
-const googleOAuthStartSchema = z.object({
-  next: z.string().trim().startsWith("/").default("/")
-});
-
-const googleOAuthCallbackSchema = z.object({
-  code: z.string().trim().min(1),
-  next: z.string().trim().startsWith("/").default("/")
-});
 
 function formatZodError(error: z.ZodError) {
   return error.issues.map((issue) => ({
@@ -63,38 +48,6 @@ function isTemporaryLoginError(message: string) {
     normalizedMessage.includes("timeout") ||
     normalizedMessage.includes("fetch failed")
   );
-}
-
-function buildFrontendRedirectUrl(baseUrl: string, nextPath: string) {
-  return new URL(nextPath, baseUrl).toString();
-}
-
-function buildFrontendOAuthCallbackUrl(
-  baseUrl: string,
-  nextPath: string,
-  session: {
-    access_token: string;
-    refresh_token?: string;
-    expires_at?: number;
-  }
-) {
-  const callbackUrl = new URL("/auth/callback", baseUrl);
-  const hashParams = new URLSearchParams({
-    access_token: session.access_token,
-    next: nextPath
-  });
-
-  if (session.refresh_token) {
-    hashParams.set("refresh_token", session.refresh_token);
-  }
-
-  if (session.expires_at !== undefined) {
-    hashParams.set("expires_at", String(session.expires_at));
-  }
-
-  callbackUrl.hash = hashParams.toString();
-
-  return callbackUrl.toString();
 }
 
 function isSecureRequest(req: Request) {
@@ -215,92 +168,6 @@ export async function signUpController(req: Request, res: Response) {
 
     return res.status(400).json({
       message
-    });
-  }
-}
-
-export async function googleOAuthStartController(req: Request, res: Response) {
-  const parsedQuery = googleOAuthStartSchema.safeParse(req.query);
-
-  if (!parsedQuery.success) {
-    return res.status(400).json({
-      message: "Invalid Google OAuth query",
-      errors: formatZodError(parsedQuery.error)
-    });
-  }
-
-  try {
-    const oauthUrl = await createGoogleOAuthUrl(
-      req,
-      res,
-      parsedQuery.data.next
-    );
-
-    return res.redirect(oauthUrl);
-  } catch (error) {
-    return res.status(400).json({
-      message:
-        error instanceof Error
-          ? error.message
-          : "Failed to start Google OAuth"
-    });
-  }
-}
-
-export async function googleOAuthCallbackController(
-  req: Request,
-  res: Response
-) {
-  const parsedQuery = googleOAuthCallbackSchema.safeParse(req.query);
-
-  if (!parsedQuery.success) {
-    return res.redirect(
-      `${env.AUTH_ERROR_REDIRECT_URL}?reason=invalid_oauth_callback`
-    );
-  }
-
-  try {
-    const data = await exchangeGoogleOAuthCode(
-      req,
-      res,
-      parsedQuery.data.code
-    );
-
-    if (!data.session?.access_token) {
-      return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_no_session`);
-    }
-
-    setAuthCookies(req, res, data.session);
-
-    return res.redirect(
-      buildFrontendOAuthCallbackUrl(
-        env.AUTH_SUCCESS_REDIRECT_URL,
-        parsedQuery.data.next,
-        data.session
-      )
-    );
-  } catch (error) {
-    return res.redirect(`${env.AUTH_ERROR_REDIRECT_URL}?reason=oauth_failed`);
-  }
-}
-
-export async function sessionController(req: Request, res: Response) {
-  try {
-    const data = await getCurrentAuthSession(req, res);
-
-    if (!data?.session?.access_token) {
-      return res.status(401).json({
-        message: "No active session"
-      });
-    }
-
-    return res.status(200).json({
-      message: "Session fetched successfully",
-      data
-    });
-  } catch {
-    return res.status(401).json({
-      message: "No active session"
     });
   }
 }

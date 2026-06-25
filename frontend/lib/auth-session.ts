@@ -8,17 +8,6 @@ export type AuthSession = {
   expires_at?: number;
 } | null;
 
-export type AuthSessionDebug = {
-  isBrowser: boolean;
-  hasLocalStorageToken: boolean;
-  hasCookieToken: boolean;
-  hasSupabaseLocalStorageToken: boolean;
-  hasSupabaseCookieToken: boolean;
-  authCookieNames: string[];
-  localStorageAvailable: boolean;
-  cookieWriteAvailable: boolean;
-};
-
 function isBrowser() {
   return typeof window !== "undefined";
 }
@@ -92,75 +81,6 @@ export function clearAuthSession() {
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
   clearSupabaseStoredAuth();
   clearSupabaseAuthCookies();
-}
-
-export function getAuthSessionDebug(): AuthSessionDebug {
-  if (!isBrowser()) {
-    return {
-      isBrowser: false,
-      hasLocalStorageToken: false,
-      hasCookieToken: false,
-      hasSupabaseLocalStorageToken: false,
-      hasSupabaseCookieToken: false,
-      authCookieNames: [],
-      localStorageAvailable: false,
-      cookieWriteAvailable: false
-    };
-  }
-
-  return {
-    isBrowser: true,
-    hasLocalStorageToken: Boolean(
-      extractAccessTokenFromValue(
-        window.localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY)
-      )
-    ),
-    hasCookieToken: Boolean(
-      extractAccessTokenFromValue(getCookieValue(ACCESS_TOKEN_COOKIE_NAME))
-    ),
-    hasSupabaseLocalStorageToken: Boolean(getSupabaseStoredAccessToken()),
-    hasSupabaseCookieToken: Boolean(getSupabaseCookieAccessToken()),
-    authCookieNames: document.cookie
-      .split("; ")
-      .filter(Boolean)
-      .map((cookie) => cookie.split("=")[0])
-      .filter(
-        (name) =>
-          name === ACCESS_TOKEN_COOKIE_NAME ||
-          (name.startsWith("sb-") && name.includes("auth-token"))
-      ),
-    localStorageAvailable: canUseLocalStorage(),
-    cookieWriteAvailable: canWriteCookie()
-  };
-}
-
-function canUseLocalStorage() {
-  try {
-    const key = "paiduay_storage_test";
-
-    window.localStorage.setItem(key, "1");
-    window.localStorage.removeItem(key);
-
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function canWriteCookie() {
-  try {
-    const key = "paiduay_cookie_test";
-
-    document.cookie = `${key}=1; path=/; samesite=lax`;
-    const canRead = document.cookie
-      .split("; ")
-      .some((cookie) => cookie === `${key}=1`);
-    document.cookie = `${key}=; path=/; max-age=0; samesite=lax`;
-
-    return canRead;
-  } catch {
-    return false;
-  }
 }
 
 function getCookieValue(name: string) {

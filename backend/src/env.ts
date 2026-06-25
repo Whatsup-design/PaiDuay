@@ -8,20 +8,6 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   HOST: z.string().trim().min(1).default("127.0.0.1"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
-  AUTH_GOOGLE_REDIRECT_URL: z
-    .string()
-    .trim()
-    .url("AUTH_GOOGLE_REDIRECT_URL must be a valid callback URL"),
-  AUTH_SUCCESS_REDIRECT_URL: z
-    .string()
-    .trim()
-    .url("AUTH_SUCCESS_REDIRECT_URL must be a valid URL")
-    .default("http://localhost:3000"),
-  AUTH_ERROR_REDIRECT_URL: z
-    .string()
-    .trim()
-    .url("AUTH_ERROR_REDIRECT_URL must be a valid URL")
-    .default("http://localhost:3000/login"),
   SUPABASE_URL: z
     .string()
     .trim()
