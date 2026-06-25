@@ -1,16 +1,6 @@
 import { Search, ShoppingBag } from "lucide-react";
 
-type MarketHeroProps = {
-  searchValue: string;
-  isSearching: boolean;
-  onSearchChange: (value: string) => void;
-};
-
-export function MarketHero({
-  searchValue,
-  isSearching,
-  onSearchChange
-}: MarketHeroProps) {
+export function MarketHero() {
   return (
     <section className="rounded-xl border border-neutral-100 bg-neutral-50/70 p-5 sm:p-6 lg:p-8">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
@@ -36,11 +26,6 @@ export function MarketHero({
             placeholder="Search local items"
             className="w-full bg-transparent text-sm font-medium text-neutral-950 outline-none placeholder:text-neutral-400"
           />
-          {isSearching && (
-            <span className="text-xs font-semibold text-sky-700">
-              Searching
-            </span>
-          )}
         </label>
       </div>
     </section>

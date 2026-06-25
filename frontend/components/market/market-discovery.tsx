@@ -28,25 +28,7 @@ const marketSections = [
   }
 ];
 
-<<<<<<< HEAD
-export function MarketDiscovery({
-  categories,
-  items
-}: MarketDiscoveryProps) {
-  const [selectedCategory, setSelectedCategory] =
-    useState<ShopCategory>("All");
-
-  const filteredItems = useMemo(() => {
-    if (selectedCategory === "All") {
-      return items;
-    }
-
-    return items.filter((item) => item.category === selectedCategory);
-  }, [items, selectedCategory]);
-
-=======
 export function MarketDiscovery({ items }: MarketDiscoveryProps) {
->>>>>>> parent of a5be1b0 (add:marketBackend)
   return (
     <section className="space-y-7">
       {marketSections.map((section) => {
