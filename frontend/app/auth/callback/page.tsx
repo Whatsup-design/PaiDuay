@@ -82,29 +82,37 @@ export default function AuthCallbackPage() {
     const beforeStore = getAuthSessionDebug();
     const { session, nextPath } = getSessionFromCallback();
 
-    setDebug({
-      ...callbackDebug,
-      beforeStore
-    });
+    globalThis.setTimeout(() => {
+      setDebug({
+        ...callbackDebug,
+        beforeStore
+      });
+    }, 0);
 
     if (!session?.access_token) {
-      setMessage("Google login did not return a session token.");
-      setCanGoLogin(true);
+      globalThis.setTimeout(() => {
+        setMessage("Google login did not return a session token.");
+        setCanGoLogin(true);
+      }, 0);
       return;
     }
 
     const isStored = storeAuthSession(session);
     const afterStore = getAuthSessionDebug();
 
-    setDebug({
-      ...callbackDebug,
-      beforeStore,
-      afterStore
-    });
+    globalThis.setTimeout(() => {
+      setDebug({
+        ...callbackDebug,
+        beforeStore,
+        afterStore
+      });
+    }, 0);
 
     if (!isStored) {
-      setMessage("The browser could not store your Google login session.");
-      setCanGoLogin(true);
+      globalThis.setTimeout(() => {
+        setMessage("The browser could not store your Google login session.");
+        setCanGoLogin(true);
+      }, 0);
       return;
     }
 
