@@ -8,14 +8,12 @@ type OtopCarouselProps = {
   title: string;
   description: string;
   children: ReactNode;
-  emptyMessage?: string;
 };
 
 export function OtopCarousel({
   title,
   description,
-  children,
-  emptyMessage
+  children
 }: OtopCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -62,11 +60,6 @@ export function OtopCarousel({
       >
         {children}
       </div>
-      {emptyMessage ? (
-        <p className="mt-2 text-xs font-medium text-neutral-400">
-          {emptyMessage}
-        </p>
-      ) : null}
     </section>
   );
 }

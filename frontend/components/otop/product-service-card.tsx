@@ -7,6 +7,7 @@ type ProductServiceCardProps = {
 
 export function ProductServiceCard({ item }: ProductServiceCardProps) {
   return (
+<<<<<<< HEAD
     <article className="w-[13.5rem] shrink-0 snap-start overflow-hidden rounded-md border border-neutral-200/80 bg-neutral-50/70 shadow-[0_6px_18px_rgb(15_23_42_/_6%)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white sm:w-[16rem]">
       {item.imageUrl ? (
         <img
@@ -19,6 +20,12 @@ export function ProductServiceCard({ item }: ProductServiceCardProps) {
           className={`h-28 bg-gradient-to-br opacity-35 grayscale ${item.gradient}`}
         />
       )}
+=======
+    <article className="min-w-[13.5rem] snap-start overflow-hidden rounded-md border border-neutral-200/80 bg-neutral-50/70 shadow-[0_6px_18px_rgb(15_23_42_/_6%)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white sm:min-w-[16rem]">
+      <div
+        className={`h-28 bg-gradient-to-br opacity-35 grayscale ${item.gradient}`}
+      />
+>>>>>>> parent of 9279d83 (add:frontend_filter_fix:sparkleUi)
       <div className="p-3.5">
         <div className="flex items-center justify-between gap-3">
           <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-semibold text-neutral-600">
