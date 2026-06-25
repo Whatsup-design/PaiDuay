@@ -2,13 +2,11 @@ import { Search, ShoppingBag } from "lucide-react";
 
 type MarketHeroProps = {
   searchValue: string;
-  isSearching: boolean;
   onSearchChange: (value: string) => void;
 };
 
 export function MarketHero({
   searchValue,
-  isSearching,
   onSearchChange
 }: MarketHeroProps) {
   return (
@@ -33,16 +31,11 @@ export function MarketHero({
           <span className="sr-only">Search shop items</span>
           <input
             type="search"
+            placeholder="Search shop items"
             value={searchValue}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Search shop items"
             className="w-full bg-transparent text-sm font-medium text-neutral-950 outline-none placeholder:text-neutral-400"
           />
-          {isSearching && (
-            <span className="text-xs font-semibold text-sky-700">
-              Searching
-            </span>
-          )}
         </label>
       </div>
     </section>

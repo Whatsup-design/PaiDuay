@@ -36,10 +36,7 @@ const marketSections = [
   }
 ];
 
-export function MarketDiscovery({
-  categories,
-  items
-}: MarketDiscoveryProps) {
+export function MarketDiscovery({ categories, items }: MarketDiscoveryProps) {
   const [selectedCategory, setSelectedCategory] =
     useState<ShopCategory>("All");
 
