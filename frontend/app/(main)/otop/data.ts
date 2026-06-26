@@ -1,3 +1,5 @@
+import type { DistanceInfo } from "@/lib/location/types";
+
 export const otopCategories = [
   "All",
   "Food",
@@ -31,6 +33,7 @@ export type Village = {
   coverImageUrl?: string;
   coverImagePath?: string;
   coverImageAlt?: string;
+  distanceInfo?: DistanceInfo | null;
 };
 
 export type ProductService = {
@@ -67,10 +70,10 @@ export type ProductService = {
   contactPhone?: string;
   contactLine?: string;
   isFeatured?: boolean;
+  distanceInfo?: DistanceInfo | null;
 };
 
 export type OtopLocation = {
   name: string;
   hint: string;
 };
-

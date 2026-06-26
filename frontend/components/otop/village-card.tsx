@@ -1,4 +1,5 @@
 import type { Village } from "../../app/(main)/otop/data";
+import { DistanceBadge } from "@/components/location/distance-badge";
 import Link from "next/link";
 
 type VillageCardProps = {
@@ -34,6 +35,10 @@ export function VillageCard({ village }: VillageCardProps) {
         <p className="mt-1.5 line-clamp-3 text-xs leading-5 text-neutral-500">
           {village.description}
         </p>
+        <DistanceBadge
+          distanceInfo={village.distanceInfo}
+          className="mt-3"
+        />
         <Link
           href={`/otop/${village.id}`}
           className="mt-4 inline-flex h-9 w-full items-center justify-center rounded-md bg-neutral-950 px-3 text-xs font-semibold text-white transition hover:bg-neutral-800"

@@ -1,5 +1,6 @@
 import { MapPin } from "lucide-react";
 import type { ProductService } from "../../app/(main)/otop/data";
+import { DistanceBadge } from "@/components/location/distance-badge";
 
 type ProductServiceCardProps = {
   item: ProductService;
@@ -40,6 +41,7 @@ export function ProductServiceCard({ item }: ProductServiceCardProps) {
           {item.name}
         </h3>
         <p className="mt-1 text-xs text-neutral-500">{item.village}</p>
+        <DistanceBadge distanceInfo={item.distanceInfo} className="mt-3" />
         {(item.openingNote || item.crowdDensity) && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {item.openingNote && (

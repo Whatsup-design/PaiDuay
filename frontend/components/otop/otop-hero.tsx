@@ -1,12 +1,53 @@
 import { MapPin, Navigation, Store } from "lucide-react";
 
 import type { OtopLocation } from "../../app/(main)/otop/data";
+import type {
+  LocationPermissionStatus,
+  StoredLocation
+} from "@/lib/location/types";
 
 type OtopHeroProps = {
   locations: OtopLocation[];
+  location: StoredLocation | null;
+  locationStatus: LocationPermissionStatus;
+  locationMessage: string;
+  onSetLocation: () => void;
 };
 
-export function OtopHero({ locations }: OtopHeroProps) {
+function formatCoordinate(value: number) {
+  return value.toFixed(4);
+}
+
+function getLocationHint(
+  location: StoredLocation | null,
+  status: LocationPermissionStatus,
+  message: string
+) {
+  if (location) {
+    return `Lat ${formatCoordinate(location.latitude)}, Lng ${formatCoordinate(
+      location.longitude
+    )}`;
+  }
+
+  if (status === "requesting") {
+    return "Waiting for browser location permission...";
+  }
+
+  return message || "Choose where you are or where you want to explore.";
+}
+
+export function OtopHero({
+  locations,
+  location,
+  locationStatus,
+  locationMessage,
+  onSetLocation
+}: OtopHeroProps) {
+  const isRequesting = locationStatus === "requesting";
+  const hasLocationIssue = ["denied", "unavailable", "error"].includes(
+    locationStatus
+  );
+
   return (
     <section className="rounded-xl bg-gradient-to-br from-sky-50 via-white to-cyan-50 px-5 py-8 md:px-8 md:py-10">
       <div>
@@ -32,16 +73,29 @@ export function OtopHero({ locations }: OtopHeroProps) {
                 <MapPin className="h-5 w-5 shrink-0 text-sky-700" />
                 <div>
                   <p className="text-sm font-semibold text-neutral-950">
-                    Current discovery area
+                    {location ? location.label : "Current discovery area"}
                   </p>
-                  <p className="text-sm text-neutral-500">
-                    Choose where you are or where you want to explore.
+                  <p
+                    className={`text-sm ${
+                      hasLocationIssue ? "text-rose-600" : "text-neutral-500"
+                    }`}
+                  >
+                    {getLocationHint(
+                      location,
+                      locationStatus,
+                      locationMessage
+                    )}
                   </p>
                 </div>
               </div>
-              <button className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 text-sm font-semibold text-white transition hover:bg-sky-800">
+              <button
+                type="button"
+                disabled={isRequesting}
+                onClick={onSetLocation}
+                className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg bg-sky-700 px-4 text-sm font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 <Navigation className="h-4 w-4" />
-                Set location
+                {isRequesting ? "Setting..." : "Set location"}
               </button>
             </div>
 

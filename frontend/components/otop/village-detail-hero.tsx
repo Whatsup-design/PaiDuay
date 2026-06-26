@@ -1,5 +1,6 @@
 import { MapPin, Tag } from "lucide-react";
 import type { Village } from "../../app/(main)/otop/data";
+import { LocationDistanceBadge } from "@/components/location/location-distance-badge";
 
 type VillageDetailHeroProps = {
   village: Village;
@@ -26,6 +27,7 @@ export function VillageDetailHero({ village }: VillageDetailHeroProps) {
         <span className="inline-flex rounded-full bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 ring-1 ring-sky-100">
           {village.category}
         </span>
+        <LocationDistanceBadge destination={village} className="mt-3" />
         <h1 className="mt-4 max-w-3xl text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">
           {village.name}
         </h1>
