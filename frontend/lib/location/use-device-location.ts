@@ -8,7 +8,7 @@ import type {
   StoredLocation
 } from "@/lib/location/types";
 
-const LOCATION_STORAGE_KEY = "paiduay_location";
+const LOCATION_STORAGE_KEY = "paikan_location";
 const LOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
   maximumAge: 60_000,

@@ -56,7 +56,7 @@ app.use("/user", requireAuth, userRouter);
 app.get("/health", (_req, res) => {
   res.status(200).json({
     ok: true,
-    service: "paiduay-backend",
+    service: "paikan-backend",
     supabase: Boolean(supabase),
     supabaseAdmin: Boolean(supabaseAdmin)
   });
@@ -64,7 +64,7 @@ app.get("/health", (_req, res) => {
 
 app.get("/", (_req, res) => {
   res.status(200).json({
-    message: "Welcome to Paiduay Backend!"
+    message: "Welcome to Paikan Backend!"
   });
 });
 

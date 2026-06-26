@@ -25,7 +25,7 @@ const statusConfig: Record<ErrorCode, StatusConfig> = {
   "401": {
     title: "Login required",
     description:
-      "Your session is missing or has expired. Login again to continue your PaiDuay journey.",
+      "Your session is missing or has expired. Login again to continue your PaiKan journey.",
     icon: Lock,
     toneClassName: "bg-sky-50 text-sky-700 ring-sky-100",
     primaryLabel: "Go to login",
@@ -78,7 +78,7 @@ function getPrimaryHref(config: StatusConfig, nextPath?: string) {
     return config.primaryHref;
   }
 
-  const loginUrl = new URL("http://paiduay.local/login");
+  const loginUrl = new URL("http://paikan.local/login");
   loginUrl.searchParams.set("next", nextPath);
 
   return `${loginUrl.pathname}${loginUrl.search}`;

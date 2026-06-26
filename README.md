@@ -1,10 +1,10 @@
-# PaiDuay
+# PaiKan
 
-PaiDuay is a Phuket-focused local discovery MVP that connects tourism, local communities, OTOP products, services, and quest-based travel experiences. The project is designed as a medium between visitors and local partners, with a focus on sustainable tourism, community value, and responsible local commerce.
+PaiKan is a Phuket-focused local discovery MVP that connects tourism, local communities, OTOP products, services, and quest-based travel experiences. The project is designed as a medium between visitors and local partners, with a focus on sustainable tourism, community value, and responsible local commerce.
 
 ## Concept
 
-PaiDuay starts with Phuket as the MVP location.
+PaiKan starts with Phuket as the MVP location.
 
 The platform focuses on:
 
@@ -88,7 +88,7 @@ User → Discover local place → Explore village/product/service → Start ques
 ## Project Structure
 
 ```txt
-paiduay/
+paikan/
   frontend/
     app/
       (main)/

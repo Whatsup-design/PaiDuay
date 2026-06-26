@@ -16,7 +16,7 @@ export function LoginForm({ registrationMessage }: LoginFormProps) {
     <div className="flex min-h-screen flex-col justify-center px-8 py-10 sm:px-12 lg:px-16">
       <div className="mx-auto w-full max-w-sm">
         <p className="mb-28 text-3xl font-semibold tracking-tight text-neutral-950">
-          PaiDuay
+          PaiKan
         </p>
 
         <div className="mb-10">

@@ -1,6 +1,9 @@
-export const ACCESS_TOKEN_STORAGE_KEY = "paiduay_access_token";
-export const REFRESH_TOKEN_STORAGE_KEY = "paiduay_refresh_token";
-export const ACCESS_TOKEN_COOKIE_NAME = "paiduay_access_token";
+export const ACCESS_TOKEN_STORAGE_KEY = "paikan_access_token";
+export const REFRESH_TOKEN_STORAGE_KEY = "paikan_refresh_token";
+export const ACCESS_TOKEN_COOKIE_NAME = "paikan_access_token";
+const LEGACY_ACCESS_TOKEN_STORAGE_KEY = "paiduay_access_token";
+const LEGACY_REFRESH_TOKEN_STORAGE_KEY = "paiduay_refresh_token";
+const LEGACY_ACCESS_TOKEN_COOKIE_NAME = "paiduay_access_token";
 
 export type AuthSession = {
   access_token: string;
@@ -25,12 +28,28 @@ export function getStoredAccessToken() {
     return storedToken;
   }
 
+  const legacyStoredToken = extractAccessTokenFromValue(
+    window.localStorage.getItem(LEGACY_ACCESS_TOKEN_STORAGE_KEY)
+  );
+
+  if (legacyStoredToken) {
+    return legacyStoredToken;
+  }
+
   const cookieToken = extractAccessTokenFromValue(
     getCookieValue(ACCESS_TOKEN_COOKIE_NAME)
   );
 
   if (cookieToken) {
     return cookieToken;
+  }
+
+  const legacyCookieToken = extractAccessTokenFromValue(
+    getCookieValue(LEGACY_ACCESS_TOKEN_COOKIE_NAME)
+  );
+
+  if (legacyCookieToken) {
+    return legacyCookieToken;
   }
 
   return getSupabaseStoredAccessToken() ?? getSupabaseCookieAccessToken();
@@ -41,7 +60,10 @@ export function getStoredRefreshToken() {
     return null;
   }
 
-  return window.localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
+  return (
+    window.localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY) ??
+    window.localStorage.getItem(LEGACY_REFRESH_TOKEN_STORAGE_KEY)
+  );
 }
 
 export function storeAuthSession(session: AuthSession) {
@@ -58,6 +80,9 @@ export function storeAuthSession(session: AuthSession) {
         session.refresh_token
       );
     }
+
+    window.localStorage.removeItem(LEGACY_ACCESS_TOKEN_STORAGE_KEY);
+    window.localStorage.removeItem(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
   } catch {
     return false;
   }
@@ -75,6 +100,7 @@ export function storeAuthSession(session: AuthSession) {
   ];
 
   document.cookie = cookieParts.join("; ");
+  document.cookie = `${LEGACY_ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
 
   return Boolean(getStoredAccessToken());
 }
@@ -86,7 +112,10 @@ export function clearAuthSession() {
 
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
   window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_ACCESS_TOKEN_STORAGE_KEY);
+  window.localStorage.removeItem(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  document.cookie = `${LEGACY_ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
   clearSupabaseStoredAuth();
   clearSupabaseAuthCookies();
 }

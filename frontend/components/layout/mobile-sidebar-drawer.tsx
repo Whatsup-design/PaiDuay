@@ -61,7 +61,7 @@ export function MobileSidebarDrawer({
         </svg>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-base font-semibold text-neutral-950">PaiDuay</p>
+            <p className="text-base font-semibold text-neutral-950">PaiKan</p>
             <p className="mt-1 text-xs text-neutral-500">
               Phuket local journey
             </p>

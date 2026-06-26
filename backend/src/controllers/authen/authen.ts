@@ -69,7 +69,7 @@ function setAuthCookies(
       ? undefined
       : Math.max(session.expires_at * 1000 - Date.now(), 0);
 
-  res.cookie("paiduay_access_token", session.access_token, {
+  res.cookie("paikan_access_token", session.access_token, {
     httpOnly: true,
     sameSite: "lax",
     secure: isSecureRequest(req),
@@ -88,6 +88,7 @@ function clearAuthCookie(req: Request, res: Response, name: string) {
 }
 
 function clearAuthCookies(req: Request, res: Response) {
+  clearAuthCookie(req, res, "paikan_access_token");
   clearAuthCookie(req, res, "paiduay_access_token");
 
   for (const cookieName of Object.keys(req.cookies ?? {})) {

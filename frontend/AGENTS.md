@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # Project Overview
 
-This repository is for **Paiduay / Phuket Local Quest Platform**, an innovation MVP for sustainable tourism in Phuket.
+This repository is for **Paikan / Phuket Local Quest Platform**, an innovation MVP for sustainable tourism in Phuket.
 
 The product should not be treated as a generic travel directory, map clone, TripAdvisor clone, or normal tourism landing page. The core idea is a **web-first local quest platform** that turns Phuket local communities, OTOP products, local restaurants, wellness services, hidden places, and community experiences into short gamified travel routes.
 
