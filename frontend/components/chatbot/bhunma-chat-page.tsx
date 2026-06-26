@@ -122,38 +122,38 @@ export function BhunMaChatPage() {
   }
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-white px-4 py-5 sm:px-5 lg:px-8 lg:py-6">
-      <div className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-5xl flex-col">
-        <div className="mb-5 flex items-center justify-between gap-3">
+    <main className="h-[calc(100dvh-10rem)] bg-white px-3 py-3 sm:px-5 sm:py-5 lg:h-[calc(100vh-4rem)] lg:px-8 lg:py-6">
+      <div className="mx-auto flex h-full min-h-0 max-w-5xl flex-col">
+        <div className="mb-3 flex shrink-0 items-center justify-between gap-3 sm:mb-5">
           <Link
             href={fromPath}
-            className="inline-flex h-10 items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50 hover:text-neutral-950"
+            className="inline-flex h-9 items-center gap-2 rounded-md border border-neutral-200 bg-white px-3 text-sm font-semibold text-neutral-600 transition hover:bg-neutral-50 hover:text-neutral-950 sm:h-10"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
           </Link>
         </div>
 
-        <section className="flex flex-1 flex-col overflow-hidden rounded-xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-cyan-50 shadow-[0_10px_32px_rgb(15_23_42_/_7%)]">
-          <header className="border-b border-sky-100 bg-white/80 px-5 py-4 backdrop-blur sm:px-6">
+        <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-cyan-50 shadow-[0_10px_32px_rgb(15_23_42_/_7%)]">
+          <header className="shrink-0 border-b border-sky-100 bg-white/80 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
             <div className="flex items-center gap-3">
-              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-sky-900 text-white shadow-[0_12px_28px_rgb(2_132_199_/_24%)]">
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-blue-600 to-sky-900 text-white shadow-[0_12px_28px_rgb(2_132_199_/_24%)] sm:h-12 sm:w-12">
                 <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-cyan-100" />
-                <BotMessageSquare className="h-6 w-6" />
+                <BotMessageSquare className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
                   PaiDuay Assistant
                 </p>
-                <h1 className="text-xl font-semibold tracking-tight text-neutral-950">
+                <h1 className="truncate text-lg font-semibold tracking-tight text-neutral-950 sm:text-xl">
                   บุญมา BhunMa
                 </h1>
               </div>
             </div>
           </header>
 
-          <div className="flex flex-1 flex-col justify-between gap-6 p-5 sm:p-6">
-            <div className="space-y-4 overflow-y-auto pr-1">
+          <div className="flex min-h-0 flex-1 flex-col gap-4 p-3 sm:gap-6 sm:p-6">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1">
               {messages.map((message) => (
                 <ChatBubble key={message.id} message={message} />
               ))}
@@ -162,28 +162,31 @@ export function BhunMaChatPage() {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              className="rounded-xl border border-sky-100 bg-white p-3 shadow-[0_8px_24px_rgb(15_23_42_/_6%)]"
+              className="shrink-0 rounded-xl border border-sky-100 bg-white p-3 shadow-[0_8px_24px_rgb(15_23_42_/_6%)]"
             >
               <label htmlFor="bhunma-message" className="sr-only">
                 Message บุญมา BhunMa
               </label>
-              <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="flex gap-2 sm:gap-3">
                 <input
                   id="bhunma-message"
                   type="text"
                   value={inputValue}
                   disabled={isSending}
                   onChange={(event) => setInputValue(event.target.value)}
-                  placeholder="Ask BhunMa about nearby OTOP, quests, or local rewards"
-                  className="h-11 flex-1 rounded-md border border-neutral-200 bg-neutral-50 px-3 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-sky-300 focus:bg-white disabled:cursor-not-allowed disabled:text-neutral-400"
+                  placeholder="Ask BhunMa..."
+                  className="h-11 min-w-0 flex-1 rounded-md border border-neutral-200 bg-neutral-50 px-3 text-sm text-neutral-700 outline-none placeholder:text-neutral-400 focus:border-sky-300 focus:bg-white disabled:cursor-not-allowed disabled:text-neutral-400"
                 />
                 <button
                   type="submit"
                   disabled={isSending || inputValue.trim().length === 0}
-                  className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-md bg-sky-700 px-4 text-sm font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500"
+                  aria-label="Send message"
+                  className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md bg-sky-700 text-sm font-semibold text-white transition hover:bg-sky-800 disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500 sm:w-auto sm:px-4"
                 >
                   <Send className="h-4 w-4" />
-                  {isSending ? "Sending..." : "Send"}
+                  <span className="hidden sm:inline">
+                    {isSending ? "Sending..." : "Send"}
+                  </span>
                 </button>
               </div>
             </form>
@@ -201,7 +204,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-2xl rounded-2xl p-4 text-sm leading-6 shadow-[0_8px_24px_rgb(15_23_42_/_6%)] ${
+        className={`max-w-[min(100%,42rem)] break-words rounded-2xl p-3 text-sm leading-6 shadow-[0_8px_24px_rgb(15_23_42_/_6%)] sm:p-4 ${
           isUser
             ? "rounded-tr-md bg-sky-700 text-white"
             : isAssistant && message.isError
@@ -213,7 +216,7 @@ function ChatBubble({ message }: { message: ChatMessage }) {
           {message.content}
         </p>
         {isAssistant && message.recommendations?.length ? (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid min-w-0 gap-3 md:grid-cols-2">
             {message.recommendations.map((recommendation) => (
               <RecommendationCard
                 key={`${recommendation.type}-${recommendation.id}`}
@@ -235,7 +238,7 @@ function RecommendationCard({
   return (
     <Link
       href={recommendation.href}
-      className="block overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 text-left transition hover:bg-white hover:shadow-sm"
+      className="block min-w-0 overflow-hidden rounded-lg border border-neutral-100 bg-neutral-50 text-left transition hover:bg-white hover:shadow-sm"
     >
       {recommendation.imageUrl ? (
         <img
@@ -257,7 +260,7 @@ function RecommendationCard({
             </span>
           ) : null}
         </div>
-        <h3 className="mt-2 text-sm font-semibold text-neutral-950">
+        <h3 className="mt-2 line-clamp-2 text-sm font-semibold text-neutral-950">
           {recommendation.title}
         </h3>
         <p className="mt-1 line-clamp-2 text-xs leading-5 text-neutral-500">
