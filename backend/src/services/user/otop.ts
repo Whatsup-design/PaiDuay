@@ -128,6 +128,18 @@ function escapeIlike(value: string) {
   return value.replaceAll("%", "\\%").replaceAll("_", "\\_");
 }
 
+function formatPriceLabel(amount: number, currency: string) {
+  if (!amount || amount <= 0) {
+    return "";
+  }
+
+  const formattedAmount = Number(amount).toLocaleString("en-US", {
+    maximumFractionDigits: 2
+  });
+
+  return currency === "THB" ? `฿${formattedAmount}` : `${formattedAmount} ${currency}`;
+}
+
 function mapVillage(row: OtopVillageRow) {
   return {
     id: row.slug,
@@ -158,6 +170,7 @@ function mapProductService(
   villagesById: Map<string, OtopVillageRow>
 ) {
   const village = villagesById.get(row.village_id);
+  const price = row.price_label || formatPriceLabel(row.price_amount, row.currency);
 
   return {
     id: row.item_id,
@@ -167,9 +180,9 @@ function mapProductService(
     village: village?.name ?? "",
     villageSlug: village?.slug ?? "",
     type: titleCase(row.item_type),
-    price: row.price_label,
+    price,
     priceAmount: row.price_amount,
-    priceLabel: row.price_label,
+    priceLabel: price,
     category: titleCase(row.category),
     gradient: gradientByCategory[row.category],
     description: row.description,

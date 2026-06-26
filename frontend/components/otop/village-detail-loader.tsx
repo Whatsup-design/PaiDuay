@@ -1,11 +1,20 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-import type { Village } from "@/app/(main)/otop/data";
+import type { ProductService, Village } from "@/app/(main)/otop/data";
 import { VillageDetailContent } from "@/components/otop/village-detail-content";
 import { VillageDetailHero } from "@/components/otop/village-detail-hero";
+import { VillageProductServiceCarousel } from "@/components/otop/village-product-service-carousel";
 
-export function VillageDetailPageContent({ village }: { village: Village }) {
+type VillageDetailPageContentProps = {
+  village: Village;
+  productServices: ProductService[];
+};
+
+export function VillageDetailPageContent({
+  village,
+  productServices
+}: VillageDetailPageContentProps) {
   return (
     <div className="space-y-4">
       <BackToOtopLink />
@@ -13,6 +22,10 @@ export function VillageDetailPageContent({ village }: { village: Village }) {
       <div className="space-y-6">
         <VillageDetailHero village={village} />
         <VillageDetailContent village={village} />
+        <VillageProductServiceCarousel
+          items={productServices}
+          villageName={village.name}
+        />
       </div>
     </div>
   );
