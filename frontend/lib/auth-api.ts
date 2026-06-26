@@ -46,6 +46,8 @@ export type LogoutResponse = {
   data: null;
 };
 
+export type RefreshResponse = LoginResponse;
+
 export function login(input: LoginRequest) {
   return apiFetch<LoginResponse>("/authen/login", {
     method: "POST",
@@ -63,5 +65,14 @@ export function signUp(input: SignUpRequest) {
 export function logout() {
   return apiFetch<LogoutResponse>("/authen/logout", {
     method: "POST"
+  });
+}
+
+export function refreshSession(refreshToken: string) {
+  return apiFetch<RefreshResponse>("/authen/refresh", {
+    method: "POST",
+    body: {
+      refreshToken
+    }
   });
 }

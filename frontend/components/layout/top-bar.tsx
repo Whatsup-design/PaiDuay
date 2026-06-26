@@ -1,5 +1,6 @@
 import { Bell, Menu, Search } from "lucide-react";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { BhunMaChatbotTrigger } from "@/components/chatbot/bhunma-chatbot-trigger";
 
 type TopBarProps = {
   isSidebarCollapsed: boolean;
@@ -58,6 +59,8 @@ export function TopBar({
       </div>
 
       <div className="ml-auto flex items-center gap-2">
+        <BhunMaChatbotTrigger />
+
         <button
           type="button"
           aria-label="Notifications"

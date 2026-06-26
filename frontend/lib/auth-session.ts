@@ -36,6 +36,14 @@ export function getStoredAccessToken() {
   return getSupabaseStoredAccessToken() ?? getSupabaseCookieAccessToken();
 }
 
+export function getStoredRefreshToken() {
+  if (!isBrowser()) {
+    return null;
+  }
+
+  return window.localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY);
+}
+
 export function storeAuthSession(session: AuthSession) {
   if (!isBrowser() || !session?.access_token) {
     return false;

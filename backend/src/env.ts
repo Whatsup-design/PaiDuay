@@ -16,7 +16,9 @@ const envSchema = z.object({
     .string()
     .trim()
     .min(1, "SUPABASE_ANON_KEY is required"),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().trim().min(1).optional()
+  SUPABASE_SERVICE_ROLE_KEY: z.string().trim().min(1).optional(),
+  GROQ_API_KEY: z.string().trim().min(1).optional(),
+  GROQ_MODEL: z.string().trim().min(1).default("openai/gpt-oss-20b")
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

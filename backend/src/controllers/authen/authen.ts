@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { loginWithEmailPassword } from "../../services/authen/login.js";
 import { signUpWithEmailPassword } from "../../services/authen/signup.js";
+import { supabase } from "../../lib/supabase.js";
 
 const loginSchema = z.object({
   email: z.string().trim().email(),
@@ -20,6 +21,10 @@ const signUpSchema = z
     path: ["confirmPassword"],
     message: "Passwords do not match"
   });
+
+const refreshSchema = z.object({
+  refreshToken: z.string().min(1)
+});
 
 function formatZodError(error: z.ZodError) {
   return error.issues.map((issue) => ({
@@ -179,4 +184,41 @@ export async function logoutController(req: Request, res: Response) {
     message: "Logout successful",
     data: null
   });
+}
+
+export async function refreshController(req: Request, res: Response) {
+  const parsedBody = refreshSchema.safeParse(req.body);
+
+  if (!parsedBody.success) {
+    return res.status(400).json({
+      message: "Invalid refresh payload",
+      errors: formatZodError(parsedBody.error)
+    });
+  }
+
+  try {
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: parsedBody.data.refreshToken
+    });
+
+    if (error || !data.session?.access_token) {
+      return res.status(401).json({
+        message: "Session expired. Please login again."
+      });
+    }
+
+    setAuthCookies(req, res, data.session);
+
+    return res.status(200).json({
+      message: "Session refreshed successfully",
+      data: {
+        user: data.user,
+        session: data.session
+      }
+    });
+  } catch {
+    return res.status(401).json({
+      message: "Session expired. Please login again."
+    });
+  }
 }

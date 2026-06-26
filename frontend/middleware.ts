@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const ACCESS_TOKEN_COOKIE_NAME = "paiduay_access_token";
 const PROTECTED_PATHS = [
+  "/assistant",
   "/home",
   "/otop",
   "/market",
@@ -60,13 +61,13 @@ function isTokenUsable(accessToken: string | undefined) {
   return expiresAt > Math.floor(Date.now() / 1000);
 }
 
-function redirectToUnauthorized(request: NextRequest) {
-  const errorUrl = new URL("/error/401", request.url);
+function redirectToRefresh(request: NextRequest) {
+  const refreshUrl = new URL("/auth/refresh", request.url);
   const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
 
-  errorUrl.searchParams.set("next", nextPath);
+  refreshUrl.searchParams.set("next", nextPath);
 
-  const response = NextResponse.redirect(errorUrl);
+  const response = NextResponse.redirect(refreshUrl);
   response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
 
   return response;
@@ -78,7 +79,7 @@ export function middleware(request: NextRequest) {
   const hasUsableToken = isTokenUsable(accessToken);
 
   if (isProtectedPath(pathname) && !hasUsableToken) {
-    return redirectToUnauthorized(request);
+    return redirectToRefresh(request);
   }
 
   if (isAuthPath(pathname) && hasUsableToken) {
@@ -91,6 +92,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/home/:path*",
+    "/assistant/:path*",
     "/otop/:path*",
     "/market/:path*",
     "/quest/:path*",
