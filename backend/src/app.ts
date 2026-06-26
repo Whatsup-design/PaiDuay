@@ -6,6 +6,7 @@ import morgan from "morgan";
 
 import { env } from "./env.js";
 import { supabase, supabaseAdmin } from "./lib/supabase.js";
+import { requireAuth } from "./middleware/require-auth.js";
 import { authenRouter } from "./routes/authen/authen.js";
 import { userRouter } from "./routes/user/user.js";
 
@@ -50,7 +51,7 @@ const logErrorResponses: RequestHandler = (req, res, next) => {
 app.use(logErrorResponses);
 
 app.use("/authen", authenRouter);
-app.use("/user", userRouter);
+app.use("/user", requireAuth, userRouter);
 
 app.get("/health", (_req, res) => {
   res.status(200).json({
