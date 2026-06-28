@@ -12,10 +12,14 @@ import { userRouter } from "./routes/user/user.js";
 
 export const app = express();
 
+const allowedOrigins = env.CORS_ORIGIN.split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(helmet());
 app.use(
   cors({
-    origin: env.CORS_ORIGIN,
+    origin: allowedOrigins,
     credentials: true
   })
 );
