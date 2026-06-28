@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const ACCESS_TOKEN_COOKIE_NAME = "paikan_access_token";
-const LEGACY_ACCESS_TOKEN_COOKIE_NAME = "paiduay_access_token";
+const ACCESS_TOKEN_COOKIE_NAME = "paitiew_access_token";
+const LEGACY_ACCESS_TOKEN_COOKIE_NAMES = [
+  "paikan_access_token",
+  "paiduay_access_token"
+];
 const PROTECTED_PATHS = [
   "/assistant",
   "/home",
@@ -70,7 +73,9 @@ function redirectToRefresh(request: NextRequest) {
 
   const response = NextResponse.redirect(refreshUrl);
   response.cookies.delete(ACCESS_TOKEN_COOKIE_NAME);
-  response.cookies.delete(LEGACY_ACCESS_TOKEN_COOKIE_NAME);
+  LEGACY_ACCESS_TOKEN_COOKIE_NAMES.forEach((name) =>
+    response.cookies.delete(name)
+  );
 
   return response;
 }
@@ -79,7 +84,9 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken =
     request.cookies.get(ACCESS_TOKEN_COOKIE_NAME)?.value ??
-    request.cookies.get(LEGACY_ACCESS_TOKEN_COOKIE_NAME)?.value;
+    LEGACY_ACCESS_TOKEN_COOKIE_NAMES.map(
+      (name) => request.cookies.get(name)?.value
+    ).find(Boolean);
   const hasUsableToken = isTokenUsable(accessToken);
 
   if (isProtectedPath(pathname) && !hasUsableToken) {

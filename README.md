@@ -1,10 +1,10 @@
-# PaiKan
+# PaiTiew
 
-PaiKan is a Phuket-focused local discovery MVP that connects tourism, local communities, OTOP products, services, and quest-based travel experiences. The project is designed as a medium between visitors and local partners, with a focus on sustainable tourism, community value, and responsible local commerce.
+PaiTiew is a Phuket-focused local discovery MVP that connects tourism, local communities, OTOP products, services, and quest-based travel experiences. The project is designed as a medium between visitors and local partners, with a focus on sustainable tourism, community value, and responsible local commerce.
 
 ## Concept
 
-PaiKan starts with Phuket as the MVP location.
+PaiTiew starts with Phuket as the MVP location.
 
 The platform focuses on:
 
@@ -88,7 +88,7 @@ User → Discover local place → Explore village/product/service → Start ques
 ## Project Structure
 
 ```txt
-paikan/
+paitiew/
   frontend/
     app/
       (main)/

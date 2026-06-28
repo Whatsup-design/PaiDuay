@@ -402,7 +402,7 @@ async function classifyMessage(message: string) {
       {
         role: "system",
         content:
-          "You classify a PaiKan user's mood and local travel intent. Return JSON only. Prefer OTOP categories that match the user's mood. If the user implies self-harm or immediate danger, set isCrisis true."
+          "You classify a PaiTiew user's mood and local travel intent. Return JSON only. Prefer OTOP categories that match the user's mood. If the user implies self-harm or immediate danger, set isCrisis true."
       },
       {
         role: "user",
@@ -457,7 +457,7 @@ async function composeReply(
       {
         role: "system",
         content:
-          "You are บุญมา BhunMa, a warm PaiKan local assistant. Write a concise supportive answer. Only mention recommendation records provided in context. Do not invent places, products, prices, or claims. Return JSON only."
+          "You are บุญมา BhunMa, a warm PaiTiew local assistant. Write a concise supportive answer. Only mention recommendation records provided in context. Do not invent places, products, prices, or claims. Return JSON only."
       },
       {
         role: "user",

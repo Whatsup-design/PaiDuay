@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
 
 import type {
@@ -8,7 +8,8 @@ import type {
   StoredLocation
 } from "@/lib/location/types";
 
-const LOCATION_STORAGE_KEY = "paikan_location";
+const LOCATION_STORAGE_KEY = "paitiew_location";
+const LEGACY_LOCATION_STORAGE_KEYS = ["paikan_location", "paiduay_location"];
 const LOCATION_OPTIONS: PositionOptions = {
   enableHighAccuracy: true,
   maximumAge: 60_000,
@@ -48,6 +49,34 @@ export function useDeviceLocation() {
   const [status, setStatus] = useState<LocationPermissionStatus>(
     location ? "granted" : "idle"
   );
+
+  useEffect(() => {
+    if (location) {
+      return;
+    }
+
+    const legacyLocation = LEGACY_LOCATION_STORAGE_KEYS.map((key) => {
+      const value = window.localStorage.getItem(key);
+
+      if (!value) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(value) as StoredLocation;
+      } catch {
+        return null;
+      }
+    }).find(Boolean);
+
+    if (legacyLocation) {
+      setLocation(legacyLocation);
+    }
+
+    LEGACY_LOCATION_STORAGE_KEYS.forEach((key) =>
+      window.localStorage.removeItem(key)
+    );
+  }, [location, setLocation]);
 
   const requestLocation = useCallback(() => {
     if (!("geolocation" in navigator)) {

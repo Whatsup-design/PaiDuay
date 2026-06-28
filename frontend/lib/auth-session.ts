@@ -1,9 +1,18 @@
-export const ACCESS_TOKEN_STORAGE_KEY = "paikan_access_token";
-export const REFRESH_TOKEN_STORAGE_KEY = "paikan_refresh_token";
-export const ACCESS_TOKEN_COOKIE_NAME = "paikan_access_token";
-const LEGACY_ACCESS_TOKEN_STORAGE_KEY = "paiduay_access_token";
-const LEGACY_REFRESH_TOKEN_STORAGE_KEY = "paiduay_refresh_token";
-const LEGACY_ACCESS_TOKEN_COOKIE_NAME = "paiduay_access_token";
+export const ACCESS_TOKEN_STORAGE_KEY = "paitiew_access_token";
+export const REFRESH_TOKEN_STORAGE_KEY = "paitiew_refresh_token";
+export const ACCESS_TOKEN_COOKIE_NAME = "paitiew_access_token";
+const LEGACY_ACCESS_TOKEN_STORAGE_KEYS = [
+  "paikan_access_token",
+  "paiduay_access_token"
+];
+const LEGACY_REFRESH_TOKEN_STORAGE_KEYS = [
+  "paikan_refresh_token",
+  "paiduay_refresh_token"
+];
+const LEGACY_ACCESS_TOKEN_COOKIE_NAMES = [
+  "paikan_access_token",
+  "paiduay_access_token"
+];
 
 export type AuthSession = {
   access_token: string;
@@ -28,9 +37,9 @@ export function getStoredAccessToken() {
     return storedToken;
   }
 
-  const legacyStoredToken = extractAccessTokenFromValue(
-    window.localStorage.getItem(LEGACY_ACCESS_TOKEN_STORAGE_KEY)
-  );
+  const legacyStoredToken = LEGACY_ACCESS_TOKEN_STORAGE_KEYS.map((key) =>
+    extractAccessTokenFromValue(window.localStorage.getItem(key))
+  ).find(Boolean);
 
   if (legacyStoredToken) {
     return legacyStoredToken;
@@ -44,9 +53,9 @@ export function getStoredAccessToken() {
     return cookieToken;
   }
 
-  const legacyCookieToken = extractAccessTokenFromValue(
-    getCookieValue(LEGACY_ACCESS_TOKEN_COOKIE_NAME)
-  );
+  const legacyCookieToken = LEGACY_ACCESS_TOKEN_COOKIE_NAMES.map((name) =>
+    extractAccessTokenFromValue(getCookieValue(name))
+  ).find(Boolean);
 
   if (legacyCookieToken) {
     return legacyCookieToken;
@@ -62,7 +71,10 @@ export function getStoredRefreshToken() {
 
   return (
     window.localStorage.getItem(REFRESH_TOKEN_STORAGE_KEY) ??
-    window.localStorage.getItem(LEGACY_REFRESH_TOKEN_STORAGE_KEY)
+    LEGACY_REFRESH_TOKEN_STORAGE_KEYS.map((key) =>
+      window.localStorage.getItem(key)
+    ).find(Boolean) ??
+    null
   );
 }
 
@@ -81,8 +93,12 @@ export function storeAuthSession(session: AuthSession) {
       );
     }
 
-    window.localStorage.removeItem(LEGACY_ACCESS_TOKEN_STORAGE_KEY);
-    window.localStorage.removeItem(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
+    LEGACY_ACCESS_TOKEN_STORAGE_KEYS.forEach((key) =>
+      window.localStorage.removeItem(key)
+    );
+    LEGACY_REFRESH_TOKEN_STORAGE_KEYS.forEach((key) =>
+      window.localStorage.removeItem(key)
+    );
   } catch {
     return false;
   }
@@ -100,7 +116,9 @@ export function storeAuthSession(session: AuthSession) {
   ];
 
   document.cookie = cookieParts.join("; ");
-  document.cookie = `${LEGACY_ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  LEGACY_ACCESS_TOKEN_COOKIE_NAMES.forEach((name) => {
+    document.cookie = `${name}=; path=/; max-age=0; samesite=lax`;
+  });
 
   return Boolean(getStoredAccessToken());
 }
@@ -112,10 +130,16 @@ export function clearAuthSession() {
 
   window.localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
   window.localStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-  window.localStorage.removeItem(LEGACY_ACCESS_TOKEN_STORAGE_KEY);
-  window.localStorage.removeItem(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
+  LEGACY_ACCESS_TOKEN_STORAGE_KEYS.forEach((key) =>
+    window.localStorage.removeItem(key)
+  );
+  LEGACY_REFRESH_TOKEN_STORAGE_KEYS.forEach((key) =>
+    window.localStorage.removeItem(key)
+  );
   document.cookie = `${ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
-  document.cookie = `${LEGACY_ACCESS_TOKEN_COOKIE_NAME}=; path=/; max-age=0; samesite=lax`;
+  LEGACY_ACCESS_TOKEN_COOKIE_NAMES.forEach((name) => {
+    document.cookie = `${name}=; path=/; max-age=0; samesite=lax`;
+  });
   clearSupabaseStoredAuth();
   clearSupabaseAuthCookies();
 }

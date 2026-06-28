@@ -143,7 +143,7 @@ export function BhunMaChatPage() {
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
-                  PaiKan Assistant
+                  PaiTiew Assistant
                 </p>
                 <h1 className="truncate text-lg font-semibold tracking-tight text-neutral-950 sm:text-xl">
                   บุญมา BhunMa

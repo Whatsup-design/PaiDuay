@@ -15,12 +15,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PaiKan",
+  title: "PaiTiew",
   description: "Phuket local journey",
   icons: {
-    icon: "/paikan-icon.svg",
-    shortcut: "/paikan-icon.svg",
-    apple: "/paikan-icon.svg",
+    icon: "/paitiew-icon.svg",
+    shortcut: "/paitiew-icon.svg",
+    apple: "/paitiew-icon.svg",
   },
 };
 

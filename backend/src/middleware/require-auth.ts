@@ -2,8 +2,11 @@ import type { Request, RequestHandler } from "express";
 
 import { supabase } from "../lib/supabase.js";
 
-const ACCESS_TOKEN_COOKIE_NAME = "paikan_access_token";
-const LEGACY_ACCESS_TOKEN_COOKIE_NAME = "paiduay_access_token";
+const ACCESS_TOKEN_COOKIE_NAME = "paitiew_access_token";
+const LEGACY_ACCESS_TOKEN_COOKIE_NAMES = [
+  "paikan_access_token",
+  "paiduay_access_token"
+];
 
 function getBearerToken(req: Request) {
   const authorizationHeader = req.headers.authorization;
@@ -24,7 +27,9 @@ function getBearerToken(req: Request) {
 function getCookieToken(req: Request) {
   const token =
     req.cookies?.[ACCESS_TOKEN_COOKIE_NAME] ??
-    req.cookies?.[LEGACY_ACCESS_TOKEN_COOKIE_NAME];
+    LEGACY_ACCESS_TOKEN_COOKIE_NAMES.map(
+      (name) => req.cookies?.[name]
+    ).find(Boolean);
 
   return typeof token === "string" && token.length > 0 ? token : null;
 }

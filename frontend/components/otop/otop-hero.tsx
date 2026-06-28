@@ -62,7 +62,7 @@ export function OtopHero({
             Explore OTOP near your place
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-neutral-600 md:text-base">
-            Set a location first so PaiKan can guide visitors to nearby
+            Set a location first so PaiTiew can guide visitors to nearby
             villages, local products, and community services instead of making
             them search from zero.
           </p>

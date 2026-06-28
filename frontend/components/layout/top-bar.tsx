@@ -29,8 +29,8 @@ export function TopBar({
       >
         <div className="flex h-10 w-12 shrink-0 items-center justify-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-white/70">
           <img
-            src="/Paikan_app-removebg-preview.png"
-            alt="PaiKan"
+            src="/PaiTiew_app-removebg-preview.png"
+            alt="PaiTiew"
             className="h-full w-full object-contain"
           />
         </div>
@@ -41,7 +41,7 @@ export function TopBar({
               : "max-w-40 translate-x-0 opacity-100"
           }`}
         >
-          <p className="text-base font-semibold leading-none">PaiKan</p>
+          <p className="text-base font-semibold leading-none">PaiTiew</p>
           <p className="mt-1 text-xs text-sky-200">Phuket local journey</p>
         </div>
       </div>

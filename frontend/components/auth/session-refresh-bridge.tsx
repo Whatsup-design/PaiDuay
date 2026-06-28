@@ -86,7 +86,7 @@ export function SessionRefreshLoading() {
           Restoring your session
         </h1>
         <p className="mt-2 text-sm text-neutral-500">
-          Please wait while PaiKan checks your login.
+          Please wait while PaiTiew checks your login.
         </p>
       </section>
     </main>

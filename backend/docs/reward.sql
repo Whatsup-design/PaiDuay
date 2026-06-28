@@ -238,7 +238,7 @@ insert into public.reward_items (
     'partner-market-pass',
     'Cross-Partner Market Pass',
     'A partner bundle reward valid across selected village and market partners.',
-    'PaiKan Partners',
+    'PaiTiew Partners',
     'partner_bundle',
     'expired',
     null,
