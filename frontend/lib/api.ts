@@ -1,8 +1,6 @@
 import { getStoredAccessToken } from "@/lib/auth-session";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
-  "http://127.0.0.1:3001";
+export const API_BASE_URL = "/api/backend";
 
 const DEFAULT_API_TIMEOUT_MS = 10000;
 
